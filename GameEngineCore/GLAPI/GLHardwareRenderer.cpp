@@ -558,6 +558,9 @@ namespace GLL
 		}
 		virtual void SetData(int level, int width, int height, int samples, DataType inputType, void * data) override
 		{
+			if (storageFormat == StorageFormat::BC1 || storageFormat == StorageFormat::BC5)
+				throw HardwareRendererException("Compressed textures must recreated instead of modified");
+
 			this->internalFormat = TranslateStorageFormat(storageFormat);
 			this->format = TranslateDataTypeToFormat(inputType);
 			this->type = TranslateDataTypeToInputType(inputType);
@@ -565,24 +568,15 @@ namespace GLL
 				this->format = GL_DEPTH_COMPONENT;
 			else if (this->internalFormat == GL_DEPTH24_STENCIL8)
 				this->format = GL_DEPTH_STENCIL;
-			if (storageFormat == StorageFormat::BC1 || storageFormat == StorageFormat::BC5)
+
+			if (samples <= 1)
 			{
-				int blocks = (int)(ceil(width / 4.0f) * ceil(height / 4.0f));
-				int bufferSize = storageFormat == StorageFormat::BC5 ? blocks * 16 : blocks * 8;
 				glBindTexture(GL_TEXTURE_2D, Handle);
-				glCompressedTexImage2D(GL_TEXTURE_2D, level, this->internalFormat, width, height, this->format, bufferSize, data);
+				glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, width, height, this->format, this->type, data);
 				glBindTexture(GL_TEXTURE_2D, 0);
 			}
 			else
-			{
-				if (samples <= 1)
-				{
-					glBindTexture(GL_TEXTURE_2D, Handle);
-					glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, width, height, this->format, this->type, data);
-					glBindTexture(GL_TEXTURE_2D, 0);
-
-				}
-			}
+				throw NotImplementedException();
 		}
 		virtual void SetData(int width, int height, int samples, DataType inputType, void * data) override
 		{
