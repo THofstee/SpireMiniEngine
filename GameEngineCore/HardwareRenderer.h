@@ -409,7 +409,11 @@ namespace GameEngine
 		virtual void Unmap() = 0;
 	};
 
-	class Texture : public CoreLib::RefObject {};
+	class Texture : public CoreLib::RefObject
+	{
+	protected:
+		Texture() {};
+	};
 
 	class Texture2D : public Texture
 	{
