@@ -1,6 +1,5 @@
 #include "../GameEngineCore/HardwareRenderer.h"
 
-#if(0)
 #include "vkel.h"
 //#define VK_CPP_NO_EXCEPTIONS
 #include "vk_cpp.hpp"
@@ -8,6 +7,7 @@
 #include "CoreLib/WinForm/Debug.h"
 #include "CoreLib/VectorMath.h"
 #include "CoreLib/PerformanceCounter.h"
+#include "../Spire/Spire.h"
 
 // Only execute actions of DEBUG_ONLY in DEBUG mode
 #if _DEBUG
@@ -2647,98 +2647,98 @@ namespace VK
 	class PipelineBuilder;
 	class Pipeline;
 
-	class PipelineInstance : public GameEngine::PipelineInstance
-	{
-	public:
-		vk::PipelineLayout& pipelineLayout;//TODO:
-		vk::Pipeline& pipeline;//TODO:
-		PipelineBinding pipelineBindings;
-		vk::DescriptorPool descriptorPool;
-		vk::DescriptorSet descriptorSet;
-		CoreLib::List<vk::DescriptorBufferInfo> boundBufferInfo;
-	public:
-		PipelineInstance(Pipeline* pipeline, const PipelineBinding& pipelineBinding);
-		~PipelineInstance()
-		{
-			if (descriptorSet) RendererState::Device().freeDescriptorSets(descriptorPool, descriptorSet);
-		}
+	//class PipelineInstance : public GameEngine::PipelineInstance
+	//{
+	//public:
+	//	vk::PipelineLayout& pipelineLayout;//TODO:
+	//	vk::Pipeline& pipeline;//TODO:
+	//	PipelineBinding pipelineBindings;
+	//	vk::DescriptorPool descriptorPool;
+	//	vk::DescriptorSet descriptorSet;
+	//	CoreLib::List<vk::DescriptorBufferInfo> boundBufferInfo;
+	//public:
+	//	PipelineInstance(Pipeline* pipeline, const PipelineBinding& pipelineBinding);
+	//	~PipelineInstance()
+	//	{
+	//		if (descriptorSet) RendererState::Device().freeDescriptorSets(descriptorPool, descriptorSet);
+	//	}
 
-		void Update()
-		{
-			if (boundBufferInfo.Count() <= 0) return;
+	//	void Update()
+	//	{
+	//		if (boundBufferInfo.Count() <= 0) return;
 
-			// Update Descriptor Set
-			CoreLib::List<vk::DescriptorBufferInfo> bufferDescriptorInfo;
-			CoreLib::List<int> bindingLocations;
-			CoreLib::List<BindingType> bindingTypes;
-			for (auto binding : pipelineBindings.GetBindings())
-			{
-				switch (binding.type)
-				{
-				case BindingType::StorageBuffer:
-				{
-					int range = binding.buf.range;
-					if (range == 0) range = dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->backingSize;
+	//		// Update Descriptor Set
+	//		CoreLib::List<vk::DescriptorBufferInfo> bufferDescriptorInfo;
+	//		CoreLib::List<int> bindingLocations;
+	//		CoreLib::List<BindingType> bindingTypes;
+	//		for (auto binding : pipelineBindings.GetBindings())
+	//		{
+	//			switch (binding.type)
+	//			{
+	//			case BindingType::StorageBuffer:
+	//			{
+	//				int range = binding.buf.range;
+	//				if (range == 0) range = dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->backingSize;
 
-					bufferDescriptorInfo.Add(
-						vk::DescriptorBufferInfo()
-						.setBuffer(dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer)
-						.setOffset(binding.buf.offset)
-						.setRange(range)
-					);
-					bindingLocations.Add(binding.location);
-					bindingTypes.Add(BindingType::StorageBuffer);
-					break;
-				}
-				case BindingType::UniformBuffer:
-				{
-					int range = binding.buf.range;
-					if (range == 0) range = dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->backingSize;
+	//				bufferDescriptorInfo.Add(
+	//					vk::DescriptorBufferInfo()
+	//					.setBuffer(dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer)
+	//					.setOffset(binding.buf.offset)
+	//					.setRange(range)
+	//				);
+	//				bindingLocations.Add(binding.location);
+	//				bindingTypes.Add(BindingType::StorageBuffer);
+	//				break;
+	//			}
+	//			case BindingType::UniformBuffer:
+	//			{
+	//				int range = binding.buf.range;
+	//				if (range == 0) range = dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->backingSize;
 
-					bufferDescriptorInfo.Add(
-						vk::DescriptorBufferInfo()
-						.setBuffer(dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer)
-						.setOffset(binding.buf.offset)
-						.setRange(range)
-					);
-					bindingLocations.Add(binding.location);
-					bindingTypes.Add(BindingType::UniformBuffer);
-					break;
-				}
-				case BindingType::Texture:
-				case BindingType::Unused:
-					break;
-				default:
-					throw HardwareRendererException("Invalid binding type");
-				}
-			}
+	//				bufferDescriptorInfo.Add(
+	//					vk::DescriptorBufferInfo()
+	//					.setBuffer(dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer)
+	//					.setOffset(binding.buf.offset)
+	//					.setRange(range)
+	//				);
+	//				bindingLocations.Add(binding.location);
+	//				bindingTypes.Add(BindingType::UniformBuffer);
+	//				break;
+	//			}
+	//			case BindingType::Texture:
+	//			case BindingType::Unused:
+	//				break;
+	//			default:
+	//				throw HardwareRendererException("Invalid binding type");
+	//			}
+	//		}
 
-			std::vector<vk::WriteDescriptorSet> writeDescriptorSets;
-			for (int k = 0; k < bufferDescriptorInfo.Count(); k++) {
-				if (bufferDescriptorInfo[k].buffer != boundBufferInfo[k].buffer)
-				{
-					//TODO: We can't bind a VK_NULL_HANDLE
-					if (!bufferDescriptorInfo[k].buffer) break;
+	//		std::vector<vk::WriteDescriptorSet> writeDescriptorSets;
+	//		for (int k = 0; k < bufferDescriptorInfo.Count(); k++) {
+	//			if (bufferDescriptorInfo[k].buffer != boundBufferInfo[k].buffer)
+	//			{
+	//				//TODO: We can't bind a VK_NULL_HANDLE
+	//				if (!bufferDescriptorInfo[k].buffer) break;
 
-					writeDescriptorSets.push_back(
-						vk::WriteDescriptorSet()
-						.setDstSet(this->descriptorSet)
-						.setDstBinding(bindingLocations[k])
-						.setDstArrayElement(0)
-						.setDescriptorCount(1)
-						.setDescriptorType(TranslateBindingType(bindingTypes[k]))
-						.setPImageInfo(nullptr)
-						.setPBufferInfo(&bufferDescriptorInfo[k])
-						.setPTexelBufferView(nullptr)
-					);
-				}
-			}
+	//				writeDescriptorSets.push_back(
+	//					vk::WriteDescriptorSet()
+	//					.setDstSet(this->descriptorSet)
+	//					.setDstBinding(bindingLocations[k])
+	//					.setDstArrayElement(0)
+	//					.setDescriptorCount(1)
+	//					.setDescriptorType(TranslateBindingType(bindingTypes[k]))
+	//					.setPImageInfo(nullptr)
+	//					.setPBufferInfo(&bufferDescriptorInfo[k])
+	//					.setPTexelBufferView(nullptr)
+	//				);
+	//			}
+	//		}
 
-			boundBufferInfo.SwapWith(bufferDescriptorInfo);
-			if (writeDescriptorSets.size() > 0)
-				RendererState::Device().updateDescriptorSets(writeDescriptorSets, nullptr);
-		}
-	};
+	//		boundBufferInfo.SwapWith(bufferDescriptorInfo);
+	//		if (writeDescriptorSets.size() > 0)
+	//			RendererState::Device().updateDescriptorSets(writeDescriptorSets, nullptr);
+	//	}
+	//};
 
 	class Pipeline : public GameEngine::Pipeline
 	{
@@ -2755,11 +2755,6 @@ namespace VK
 			if (pipelineLayout) RendererState::Device().destroyPipelineLayout(pipelineLayout);
 			for (auto descriptorSetLayout : descriptorSetLayouts)
 				RendererState::Device().destroyDescriptorSetLayout(descriptorSetLayout);
-		}
-
-		virtual PipelineInstance* CreateInstance(const PipelineBinding& pipelineBinding) override
-		{
-			return new PipelineInstance(this, pipelineBinding);
 		}
 	};
 
@@ -2875,18 +2870,22 @@ namespace VK
 				);
 			}
 		}
-		virtual void SetBindingLayout(int bindingId, BindingType bindType) override
+		virtual void SetBindingLayout(CoreLib::ArrayView<DescriptorSetLayout*> descriptorSets) override
 		{
-			if (bindType == BindingType::Unused) return;//TODO: Should do something else?
+			//if (bindType == BindingType::Unused) return;//TODO: Should do something else?
 
-			layoutBindings.Add(
-				vk::DescriptorSetLayoutBinding()
-				.setBinding(bindingId)
-				.setDescriptorType(TranslateBindingType(bindType))
-				.setDescriptorCount(1)
-				.setStageFlags(vk::ShaderStageFlagBits::eAllGraphics)//TODO: improve
-				.setPImmutableSamplers(nullptr)
-			);
+			//layoutBindings.Add(
+			//	vk::DescriptorSetLayoutBinding()
+			//	.setBinding(bindingId)
+			//	.setDescriptorType(TranslateBindingType(bindType))
+			//	.setDescriptorCount(1)
+			//	.setStageFlags(vk::ShaderStageFlagBits::eAllGraphics)//TODO: improve
+			//	.setPImmutableSamplers(nullptr)
+			//);
+		}
+		virtual void SetDebugName(CoreLib::String name)
+		{
+			throw CoreLib::NotImplementedException();
 		}
 		virtual Pipeline* ToPipeline(GameEngine::RenderTargetLayout* renderTargetLayout) override
 		{
@@ -3063,112 +3062,112 @@ namespace VK
 		this->pipeline = RendererState::Device().createGraphicsPipelines(vk::PipelineCache(), pipelineCreateInfo).value[0];
 	}
 
-	PipelineInstance::PipelineInstance(Pipeline* pipeline, const PipelineBinding& pipelineBinding) :
-		pipeline(pipeline->pipeline),
-		pipelineLayout(pipeline->pipelineLayout),
-		pipelineBindings(pipelineBinding)
-	{
-		if (pipeline->descriptorPoolSizes.Count() > 0)
-		{
-			std::pair<vk::DescriptorPool, vk::DescriptorSet> res = RendererState::AllocateDescriptorSet(pipeline->descriptorSetLayouts);
-			this->descriptorPool = res.first;
-			this->descriptorSet = res.second;
+	//PipelineInstance::PipelineInstance(Pipeline* pipeline, const PipelineBinding& pipelineBinding) :
+	//	pipeline(pipeline->pipeline),
+	//	pipelineLayout(pipeline->pipelineLayout),
+	//	pipelineBindings(pipelineBinding)
+	//{
+	//	if (pipeline->descriptorPoolSizes.Count() > 0)
+	//	{
+	//		std::pair<vk::DescriptorPool, vk::DescriptorSet> res = RendererState::AllocateDescriptorSet(pipeline->descriptorSetLayouts);
+	//		this->descriptorPool = res.first;
+	//		this->descriptorSet = res.second;
 
-			// Update Descriptor Set
-			std::vector<vk::WriteDescriptorSet> writeDescriptorSets;
-			CoreLib::List<vk::DescriptorBufferInfo> bufferDescriptorInfo;
-			CoreLib::List<vk::DescriptorImageInfo> textureDescriptorInfo;
+	//		// Update Descriptor Set
+	//		std::vector<vk::WriteDescriptorSet> writeDescriptorSets;
+	//		CoreLib::List<vk::DescriptorBufferInfo> bufferDescriptorInfo;
+	//		CoreLib::List<vk::DescriptorImageInfo> textureDescriptorInfo;
 
-			for (auto binding : pipelineBinding.GetBindings())
-			{
-				switch (binding.type)
-				{
-				case BindingType::StorageBuffer:
-				{
-					int range = binding.buf.range;
-					if (range == 0) range = dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->backingSize;
+	//		for (auto binding : pipelineBinding.GetBindings())
+	//		{
+	//			switch (binding.type)
+	//			{
+	//			case BindingType::StorageBuffer:
+	//			{
+	//				int range = binding.buf.range;
+	//				if (range == 0) range = dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->backingSize;
 
-					bufferDescriptorInfo.Add(
-						vk::DescriptorBufferInfo()
-						.setBuffer(dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer)
-						.setOffset(binding.buf.offset)
-						.setRange(range)
-					);
+	//				bufferDescriptorInfo.Add(
+	//					vk::DescriptorBufferInfo()
+	//					.setBuffer(dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer)
+	//					.setOffset(binding.buf.offset)
+	//					.setRange(range)
+	//				);
 
-					//TODO: We can't bind a VK_NULL_HANDLE
-					if (!dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer) break;
+	//				//TODO: We can't bind a VK_NULL_HANDLE
+	//				if (!dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer) break;
 
-					writeDescriptorSets.push_back(
-						vk::WriteDescriptorSet()
-						.setDstSet(this->descriptorSet)
-						.setDstBinding(binding.location)
-						.setDstArrayElement(0)
-						.setDescriptorCount(1)
-						.setDescriptorType(vk::DescriptorType::eStorageBuffer)
-						.setPImageInfo(nullptr)
-						.setPBufferInfo(&bufferDescriptorInfo.Last())
-						.setPTexelBufferView(nullptr)
-					);
-					break;
-				}
-				case BindingType::UniformBuffer:
-				{
-					int range = binding.buf.range;
-					if (range == 0) range = dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->backingSize;
+	//				writeDescriptorSets.push_back(
+	//					vk::WriteDescriptorSet()
+	//					.setDstSet(this->descriptorSet)
+	//					.setDstBinding(binding.location)
+	//					.setDstArrayElement(0)
+	//					.setDescriptorCount(1)
+	//					.setDescriptorType(vk::DescriptorType::eStorageBuffer)
+	//					.setPImageInfo(nullptr)
+	//					.setPBufferInfo(&bufferDescriptorInfo.Last())
+	//					.setPTexelBufferView(nullptr)
+	//				);
+	//				break;
+	//			}
+	//			case BindingType::UniformBuffer:
+	//			{
+	//				int range = binding.buf.range;
+	//				if (range == 0) range = dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->backingSize;
 
-					bufferDescriptorInfo.Add(
-						vk::DescriptorBufferInfo()
-						.setBuffer(dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer)
-						.setOffset(binding.buf.offset)
-						.setRange(range)
-					);
+	//				bufferDescriptorInfo.Add(
+	//					vk::DescriptorBufferInfo()
+	//					.setBuffer(dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer)
+	//					.setOffset(binding.buf.offset)
+	//					.setRange(range)
+	//				);
 
-					//TODO: We can't bind a VK_NULL_HANDLE
-					if (!dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer) break;
+	//				//TODO: We can't bind a VK_NULL_HANDLE
+	//				if (!dynamic_cast<VK::BufferObject*>(binding.buf.buffer)->buffer) break;
 
-					writeDescriptorSets.push_back(
-						vk::WriteDescriptorSet()
-						.setDstSet(this->descriptorSet)
-						.setDstBinding(binding.location)
-						.setDstArrayElement(0)
-						.setDescriptorCount(1)
-						.setDescriptorType(vk::DescriptorType::eUniformBuffer)
-						.setPImageInfo(nullptr)
-						.setPBufferInfo(&bufferDescriptorInfo.Last())
-						.setPTexelBufferView(nullptr)
-					);
-					break;
-				}
-				case BindingType::Texture:
-					textureDescriptorInfo.Add(
-						vk::DescriptorImageInfo()
-						.setImageLayout(vk::ImageLayout::eGeneral)
-						.setImageView(dynamic_cast<VK::Texture*>(binding.tex.texture)->view)
-						.setSampler(dynamic_cast<VK::TextureSampler*>(binding.tex.sampler)->sampler)
-					);
+	//				writeDescriptorSets.push_back(
+	//					vk::WriteDescriptorSet()
+	//					.setDstSet(this->descriptorSet)
+	//					.setDstBinding(binding.location)
+	//					.setDstArrayElement(0)
+	//					.setDescriptorCount(1)
+	//					.setDescriptorType(vk::DescriptorType::eUniformBuffer)
+	//					.setPImageInfo(nullptr)
+	//					.setPBufferInfo(&bufferDescriptorInfo.Last())
+	//					.setPTexelBufferView(nullptr)
+	//				);
+	//				break;
+	//			}
+	//			case BindingType::Texture:
+	//				textureDescriptorInfo.Add(
+	//					vk::DescriptorImageInfo()
+	//					.setImageLayout(vk::ImageLayout::eGeneral)
+	//					.setImageView(dynamic_cast<VK::Texture*>(binding.tex.texture)->view)
+	//					.setSampler(dynamic_cast<VK::TextureSampler*>(binding.tex.sampler)->sampler)
+	//				);
 
-					writeDescriptorSets.push_back(
-						vk::WriteDescriptorSet()
-						.setDstSet(this->descriptorSet)
-						.setDstBinding(binding.location)
-						.setDstArrayElement(0)
-						.setDescriptorCount(1)
-						.setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
-						.setPImageInfo(&textureDescriptorInfo.Last())
-						.setPBufferInfo(nullptr)
-						.setPTexelBufferView(nullptr)
-					);
-				case BindingType::Unused:
-					break;
-				default:
-					throw HardwareRendererException("Invalid binding type");
-				}
-			}
+	//				writeDescriptorSets.push_back(
+	//					vk::WriteDescriptorSet()
+	//					.setDstSet(this->descriptorSet)
+	//					.setDstBinding(binding.location)
+	//					.setDstArrayElement(0)
+	//					.setDescriptorCount(1)
+	//					.setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
+	//					.setPImageInfo(&textureDescriptorInfo.Last())
+	//					.setPBufferInfo(nullptr)
+	//					.setPTexelBufferView(nullptr)
+	//				);
+	//			case BindingType::Unused:
+	//				break;
+	//			default:
+	//				throw HardwareRendererException("Invalid binding type");
+	//			}
+	//		}
 
-			boundBufferInfo.SwapWith(bufferDescriptorInfo);
-			RendererState::Device().updateDescriptorSets(writeDescriptorSets, nullptr);
-		}
-	}
+	//		boundBufferInfo.SwapWith(bufferDescriptorInfo);
+	//		RendererState::Device().updateDescriptorSets(writeDescriptorSets, nullptr);
+	//	}
+	//}
 
 #define SHARED_EVENT false
 #if SHARED_EVENT
@@ -3273,14 +3272,17 @@ namespace VK
 			//TODO: Can make index buffer use 16 bit ints if possible?
 			buffer.bindIndexBuffer(dynamic_cast<VK::BufferObject*>(indexBuffer)->Buffer(), { 0 }, vk::IndexType::eUint32);
 		}
-		virtual void BindPipeline(GameEngine::PipelineInstance* pipelineInstance) override
+		virtual void BindDescriptorSet(int binding, DescriptorSet* descSet) override
 		{
-			dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->Update();
+			// Should maybe look something like this:
+			//dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->Update();
 
-			if (dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->descriptorSet)
-				buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->pipelineLayout, 0, dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->descriptorSet, nullptr);//TODO: offsets
-
-			buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->pipeline);
+			//if (dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->descriptorSet)
+			//	buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->pipelineLayout, 0, dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->descriptorSet, nullptr);//TODO: offsets
+		}
+		virtual void BindPipeline(GameEngine::Pipeline* pipeline) override
+		{
+			buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, dynamic_cast<VK::Pipeline*>(pipeline)->pipeline);
 		}
 
 		virtual void Draw(int firstVertex, int vertexCount) override
@@ -3573,9 +3575,9 @@ namespace VK
 			images = RendererState::Device().getSwapchainImagesKHR(swapchain).value;
 		}
 
-		virtual CoreLib::String GetSpireBackendName() override
+		virtual int GetSpireTarget() override
 		{
-			return "spirv";
+			return SPIRE_GLSL_VULKAN;
 		}
 
 		void CreateCommandBuffers()
@@ -4175,9 +4177,19 @@ namespace VK
 			return new BufferObject(TranslateUsageFlags(usage), vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
 		}
 
+		Texture2D* CreateTexture2D(int width, int height, StorageFormat format, DataType dataType, void* data)
+		{
+			throw CoreLib::NotImplementedException();
+		}
+
 		Texture2D* CreateTexture2D(TextureUsage usage, int width, int height, int mipLevelCount, StorageFormat format)
 		{
 			return new Texture2D(usage, width, height, mipLevelCount, format);
+		}
+
+		Texture2D* CreateTexture2D(TextureUsage usage, int width, int height, int mipLevelCount, StorageFormat format, DataType dataType, CoreLib::ArrayView<void*> mipLevelData)
+		{
+			throw CoreLib::NotImplementedException();
 		}
 
 		Texture2DArray * CreateTexture2DArray(TextureUsage usage, int w, int h, int layers, int mipLevelCount, StorageFormat format)
@@ -4212,6 +4224,21 @@ namespace VK
 			return new PipelineBuilder();
 		}
 
+		virtual DescriptorSetLayout* CreateDescriptorSetLayout(CoreLib::ArrayView<DescriptorLayout> descriptors) override
+		{
+			throw CoreLib::NotImplementedException();
+		}
+
+		virtual DescriptorSet * CreateDescriptorSet(DescriptorSetLayout* layout) override
+		{
+			throw CoreLib::NotImplementedException();
+		}
+
+		virtual int GetDescriptorPoolCount() override
+		{
+			throw CoreLib::NotImplementedException();
+		}
+
 		CommandBuffer* CreateCommandBuffer()
 		{
 			return new CommandBuffer();
@@ -4237,13 +4264,4 @@ HardwareRenderer* GameEngine::CreateVulkanHardwareRenderer(int gpuId)
 {
 	VK::GpuId = gpuId;
 	return new VK::HardwareRenderer();
-}
-#endif
-
-namespace GameEngine
-{
-	HardwareRenderer* GameEngine::CreateVulkanHardwareRenderer(int /*gpuId*/)
-	{
-		return nullptr;
-	}
 }
