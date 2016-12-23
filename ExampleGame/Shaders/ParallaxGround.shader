@@ -6,7 +6,7 @@ module MaterialGeometry
     public using NoTessellation;
     public vec3 displacement = vec3(0.0);
 }
-module MaterialPattern
+module MaterialPattern implements IMaterialPattern
 {
     param Texture2D albedoMap;
     param Texture2D normalMap;
@@ -22,13 +22,12 @@ module MaterialPattern
     vec3 viewDirTan = WorldSpaceToTangentSpace(normalize(cameraPos - pos));
     using pom = ParallaxOcclusionMapping(
         heightTexture: displacementMap,
-        viewDirTangentSpace: WorldSpaceToTangentSpace(normalize(cameraPos - pos)),
+        viewDirTangentSpace: viewDirTan,
         uv: vertUV * uvScale,
         parallaxScale: 0.02
     );
     
     vec2 uv = pom.uvOut;
-    
     public vec3 albedo = albedoMap.Sample(textureSampler, uv).xyz * 0.7;
     public vec3 normal = normalize(normalMap.Sample(textureSampler, uv).xyz * 2.0 - 1.0);
     public float roughness = 0.5;

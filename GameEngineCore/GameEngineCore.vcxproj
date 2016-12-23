@@ -166,7 +166,6 @@
     <ClCompile Include="EngineActorClasses.cpp" />
     <ClCompile Include="ForwardBaseRenderPass.cpp" />
     <ClCompile Include="FreeRoamCameraController.cpp" />
-    <ClCompile Include="GameEngineCore.cpp" />
     <ClCompile Include="GBufferRenderPass.cpp" />
     <ClCompile Include="GLAPI\GLHardwareRenderer.cpp" />
     <ClCompile Include="GraphicsSettings.cpp" />
@@ -229,6 +228,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBuilder.h" />
+    <ClInclude Include="ModuleInstance.h" />
     <ClInclude Include="MotionGraph.h" />
     <ClInclude Include="MotionGraphAnimationSynthesizer.h" />
     <ClInclude Include="MotionGraphMeshActor.h" />

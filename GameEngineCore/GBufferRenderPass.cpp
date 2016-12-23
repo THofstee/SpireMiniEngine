@@ -12,7 +12,7 @@ namespace GameEngine
 	{
 	private:
 		String shaderEntryPoint = R"(
-			shader GBufferPass : StandardPipeline
+			shader GBufferPass targets StandardPipeline
 			{
 				public using VertexAttributes;
 				[Binding: "0"]
@@ -27,7 +27,7 @@ namespace GameEngine
 				vec3 lightParam = vec3(roughness, metallic, specular);
 				public out @Fragment vec3 outputAlbedo = albedo;
 				public out @Fragment vec3 outputPbr = lightParam;
-				public out @Fragment vec3 outputNormal = TangentSpaceToWorldSpace(normal) * 0.5 + 0.5;
+				public out @Fragment vec3 outputNormal = TangentSpaceToWorldSpace(vec3(normal.x, -normal.y, normal.z)) * 0.5 + 0.5;
 			};
 		)";
 	protected:

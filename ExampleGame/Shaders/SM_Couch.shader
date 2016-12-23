@@ -1,6 +1,6 @@
 using "DefaultGeometry.shader";
 
-module MaterialPattern
+module MaterialPattern implements IMaterialPattern
 {
     param Texture2D maskMap;
     param Texture2D leatherNormalMap;
@@ -45,11 +45,6 @@ module MaterialPattern
             mix(Desaturation2, Desaturation2WearSpot, wearFactor)) * 
             mix(Color2, Color2WearSpot, wearFactor), mask.x), 
             Color3, mask.y), SeamColor, aoTex.y) * ao;
-    }
-    
-    public float selfShadow(vec3 lightDir)
-    {
-        return 1.0;
     }
 }
 
