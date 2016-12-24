@@ -3408,85 +3408,11 @@ extern "C" {
 	extern PFN_vkVoidFunction vkelGetInstanceProcAddr(VkInstance instance, const char *pName);
 	extern PFN_vkVoidFunction vkelGetDeviceProcAddr(VkDevice device, const char *pName);
 
-
-	extern void vkelDeleteNames(uint32_t nameCount, char **names);
-
-
-	extern char** vkelGetInstanceExtensionNames(const char *pLayerName, uint32_t *extensionNameCount);
-#define vkelDeleteInstanceExtensionNames vkelDeleteNames
-
-	extern char** vkelGetInstanceLayerNames(uint32_t *layerNameCount);
-#define vkelDeleteInstanceLayerNames vkelDeleteNames
-
-
-	extern char** vkelGetDeviceExtensionNames(VkPhysicalDevice physicalDevice, const char *pLayerName, uint32_t *extensionNameCount);
-#define vkelDeleteDeviceExtensionNames vkelDeleteNames
-
-	extern char** vkelGetDeviceLayerNames(VkPhysicalDevice physicalDevice, uint32_t *layerNameCount);
-#define vkelDeleteDeviceLayerNames vkelDeleteNames
-
-
-	extern VkBool32 vkelIsInstanceLayerSupported(const char *pLayerName);
-	extern VkBool32 vkelIsInstanceExtensionSupported(const char *pLayerName, const char *pExtensionName);
-
-	extern VkBool32 vkelIsDeviceLayerSupported(VkPhysicalDevice physicalDevice, const char *pLayerName);
-	extern VkBool32 vkelIsDeviceExtensionSupported(VkPhysicalDevice physicalDevice, const char *pLayerName, const char *pExtensionName);
-
-
 	extern VkBool32 vkelInit(void);
 	extern VkBool32 vkelInstanceInit(VkInstance instance);
 	extern VkBool32 vkelDeviceInit(VkPhysicalDevice physicalDevice, VkDevice device);
 
 	extern void vkelUninit(void);
-
-
-	// Instance and device extension names
-	extern VkBool32 VKEL_AMD_draw_indirect_count;
-	extern VkBool32 VKEL_AMD_gcn_shader;
-	extern VkBool32 VKEL_AMD_gpu_shader_half_float;
-	extern VkBool32 VKEL_AMD_negative_viewport_height;
-	extern VkBool32 VKEL_AMD_rasterization_order;
-	extern VkBool32 VKEL_AMD_shader_ballot;
-	extern VkBool32 VKEL_AMD_shader_explicit_vertex_parameter;
-	extern VkBool32 VKEL_AMD_shader_trinary_minmax;
-	extern VkBool32 VKEL_EXT_debug_marker;
-	extern VkBool32 VKEL_EXT_debug_report;
-	extern VkBool32 VKEL_EXT_validation_flags;
-	extern VkBool32 VKEL_IMG_filter_cubic;
-	extern VkBool32 VKEL_IMG_format_pvrtc;
-	extern VkBool32 VKEL_KHR_android_surface;
-	extern VkBool32 VKEL_KHR_display;
-	extern VkBool32 VKEL_KHR_display_swapchain;
-	extern VkBool32 VKEL_KHR_mir_surface;
-	extern VkBool32 VKEL_KHR_sampler_mirror_clamp_to_edge;
-	extern VkBool32 VKEL_KHR_surface;
-	extern VkBool32 VKEL_KHR_swapchain;
-	extern VkBool32 VKEL_KHR_wayland_surface;
-	extern VkBool32 VKEL_KHR_win32_surface;
-	extern VkBool32 VKEL_KHR_xcb_surface;
-	extern VkBool32 VKEL_KHR_xlib_surface;
-	extern VkBool32 VKEL_NVX_device_generated_commands;
-	extern VkBool32 VKEL_NV_dedicated_allocation;
-	extern VkBool32 VKEL_NV_external_memory;
-	extern VkBool32 VKEL_NV_external_memory_capabilities;
-	extern VkBool32 VKEL_NV_external_memory_win32;
-	extern VkBool32 VKEL_NV_glsl_shader;
-	extern VkBool32 VKEL_NV_win32_keyed_mutex;
-
-	// Instance and device layer names
-	extern VkBool32 VKEL_LAYER_GOOGLE_unique_objects;
-	extern VkBool32 VKEL_LAYER_LUNARG_api_dump;
-	extern VkBool32 VKEL_LAYER_LUNARG_device_limits;
-	extern VkBool32 VKEL_LAYER_LUNARG_draw_state;
-	extern VkBool32 VKEL_LAYER_LUNARG_image;
-	extern VkBool32 VKEL_LAYER_LUNARG_mem_tracker;
-	extern VkBool32 VKEL_LAYER_LUNARG_object_tracker;
-	extern VkBool32 VKEL_LAYER_LUNARG_param_checker;
-	extern VkBool32 VKEL_LAYER_LUNARG_screenshot;
-	extern VkBool32 VKEL_LAYER_LUNARG_swapchain;
-	extern VkBool32 VKEL_LAYER_LUNARG_threading;
-	extern VkBool32 VKEL_LAYER_LUNARG_vktrace;
-
 
 	// Functions
 	extern PFN_vkAcquireNextImageKHR __vkAcquireNextImageKHR;
