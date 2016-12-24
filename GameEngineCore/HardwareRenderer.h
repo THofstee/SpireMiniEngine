@@ -68,45 +68,6 @@ namespace GameEngine
 		Unused, UniformBuffer, StorageBuffer, Texture, Sampler
 	};
 
-	struct DescriptorLayout
-	{
-		int Location; //> location in the descritpor set
-		BindingType Type; //< type of the resource binding this descriptor is about
-		// LegacyBindingPoint is used by OpenGL renderer so that it knows what actual binding point this descriptor maps to.
-		// This information is provided by the shader compiler.
-		CoreLib::List<int> LegacyBindingPoints;
-		DescriptorLayout() = default;
-		DescriptorLayout(int loc, BindingType type, int legacyBinding = -1)
-		{
-			Location = loc;
-			Type = type;
-			if (legacyBinding != -1)
-				LegacyBindingPoints.Add(legacyBinding);
-		}
-	};
-
-	class DescriptorSetLayout : public CoreLib::RefObject
-	{
-	protected:
-		DescriptorSetLayout() {}
-	};
-
-	class Texture;
-	class TextureSampler;
-	class Buffer;
-
-	class DescriptorSet : public CoreLib::RefObject
-	{
-	protected:
-		DescriptorSet() {}
-	public:
-		virtual void BeginUpdate() = 0;
-		virtual void Update(int location, Texture* texture) = 0;
-		virtual void Update(int location, TextureSampler* sampler) = 0;
-		virtual void Update(int location, Buffer* buffer, int offset = 0, int length = -1) = 0;
-		virtual void EndUpdate() = 0;
-	};
-
 	enum class DataType
 	{
 		Byte = 0x10, Byte2 = 0x11, Byte3 = 0x12, Byte4 = 0x13,
@@ -580,6 +541,43 @@ namespace GameEngine
 		int range;
 	};
 
+	struct DescriptorLayout
+	{
+		int Location; //> location in the descritpor set
+		BindingType Type; //< type of the resource binding this descriptor is about
+						  // LegacyBindingPoint is used by OpenGL renderer so that it knows what actual binding point this descriptor maps to.
+						  // This information is provided by the shader compiler.
+		CoreLib::List<int> LegacyBindingPoints;
+		DescriptorLayout() = default;
+		DescriptorLayout(int loc, BindingType type, int legacyBinding = -1)
+		{
+			Location = loc;
+			Type = type;
+			if (legacyBinding != -1)
+				LegacyBindingPoints.Add(legacyBinding);
+		}
+	};
+
+	// API specific class that holds internal representation of DescriptorSetLayout
+	class DescriptorSetLayout : public CoreLib::RefObject
+	{
+	protected:
+		DescriptorSetLayout() {}
+	};
+
+	class DescriptorSet : public CoreLib::RefObject
+	{
+	protected:
+		DescriptorSet() {}
+	public:
+		virtual void BeginUpdate() = 0;
+		virtual void Update(int location, Texture* texture) = 0;
+		virtual void Update(int location, TextureSampler* sampler) = 0;
+		virtual void Update(int location, Buffer* buffer, int offset = 0, int length = -1) = 0;
+		virtual void EndUpdate() = 0;
+	};
+
+	// API specific class that holds the pipeline representation
 	class Pipeline : public CoreLib::RefObject
 	{
 	protected:
