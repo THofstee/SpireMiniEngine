@@ -901,6 +901,20 @@ namespace VK
 		}
 	}
 
+	// Converts CoreLib::ArrayView to vk::ArrayProxy
+	template <typename T>
+	constexpr vk::ArrayProxy<T> toArrayProxy(CoreLib::ArrayView<typename std::remove_const<T>::type> arrayView)
+	{
+		return vk::ArrayProxy<T>(arrayView.Count(), arrayView.Buffer());
+	}
+
+	// Converts CoreLib::List to vk::ArrayProxy
+	template <typename T>
+	constexpr vk::ArrayProxy<T> toArrayProxy(CoreLib::List<typename std::remove_const<T>::type> list)
+	{
+		return vk::ArrayProxy<T>(list.Count(), list.Buffer());
+	}
+
 	/*
 	* Vulkan helper functions
 	*/
@@ -1516,20 +1530,20 @@ namespace VK
 				view = RendererState::Device().createImageView(imageViewCreateInfo).value;
 
 				// Create blit copy regions
-				std::vector<vk::ImageBlit> stagingBlitRegions(1);
-				std::vector<vk::ImageBlit> blitRegions(mipLevels - 1);
-				stagingBlitRegions[0] = vk::ImageBlit()
+				CoreLib::List<vk::ImageBlit> stagingBlitRegions;
+				CoreLib::List<vk::ImageBlit> blitRegions;
+				stagingBlitRegions.Add(vk::ImageBlit()
 					.setSrcSubresource(vk::ImageSubresourceLayers().setAspectMask(aspectFlags).setMipLevel(0).setBaseArrayLayer(0).setLayerCount(1))
 					.setSrcOffsets(std::array<vk::Offset3D, 2>{vk::Offset3D(0, 0, 0), vk::Offset3D(width, height, 1)})
 					.setDstSubresource(vk::ImageSubresourceLayers().setAspectMask(aspectFlags).setMipLevel(0).setBaseArrayLayer(0).setLayerCount(1))
-					.setDstOffsets(std::array<vk::Offset3D, 2>{vk::Offset3D(0, 0, 0), vk::Offset3D(width, height, 1)});
+					.setDstOffsets(std::array<vk::Offset3D, 2>{vk::Offset3D(0, 0, 0), vk::Offset3D(width, height, 1)}));
 				for (int l = 1; l < mipLevels; l++)
 				{
-					blitRegions[l - 1] = vk::ImageBlit()
+					blitRegions.Add(vk::ImageBlit()
 						.setSrcSubresource(vk::ImageSubresourceLayers().setAspectMask(aspectFlags).setMipLevel(l - 1).setBaseArrayLayer(0).setLayerCount(1))
 						.setSrcOffsets(std::array<vk::Offset3D, 2>{vk::Offset3D(0, 0, 0), vk::Offset3D(max(1, width >> (l - 1)), max(1, height >> (l - 1)), 1)})
 						.setDstSubresource(vk::ImageSubresourceLayers().setAspectMask(aspectFlags).setMipLevel(l).setBaseArrayLayer(0).setLayerCount(1))
-						.setDstOffsets(std::array<vk::Offset3D, 2>{vk::Offset3D(0, 0, 0), vk::Offset3D(max(1, width >> l), max(1, height >> l), 1)});
+						.setDstOffsets(std::array<vk::Offset3D, 2>{vk::Offset3D(0, 0, 0), vk::Offset3D(max(1, width >> l), max(1, height >> l), 1)}));
 				}
 
 				// Create command buffer
@@ -1583,14 +1597,14 @@ namespace VK
 				transferCommandBuffer.blitImage(
 					oldImage, currentLayout,
 					image, vk::ImageLayout::eGeneral,
-					stagingBlitRegions,
+					toArrayProxy<const vk::ImageBlit>(stagingBlitRegions),
 					vk::Filter::eNearest
 				);
 				// Blit texture to each mip level
 				transferCommandBuffer.blitImage(
 					image, vk::ImageLayout::eGeneral,
 					image, vk::ImageLayout::eGeneral,
-					blitRegions,
+					toArrayProxy<const vk::ImageBlit>(blitRegions),
 					vk::Filter::eLinear
 				);
 				transferCommandBuffer.pipelineBarrier(
@@ -1627,14 +1641,14 @@ namespace VK
 			else
 			{
 				// Create blit copy regions
-				std::vector<vk::ImageBlit> blitRegions(mipLevels - 1);
+				CoreLib::List<vk::ImageBlit> blitRegions;
 				for (int l = 1; l < mipLevels; l++)
 				{
-					blitRegions[l - 1] = vk::ImageBlit()
+					blitRegions.Add(vk::ImageBlit()
 						.setSrcSubresource(vk::ImageSubresourceLayers().setAspectMask(aspectFlags).setMipLevel(l - 1).setBaseArrayLayer(0).setLayerCount(1))
 						.setSrcOffsets(std::array<vk::Offset3D, 2>{vk::Offset3D(0, 0, 0), vk::Offset3D(max(1, width >> (l - 1)), max(1, height >> (l - 1)), 1)})
 						.setDstSubresource(vk::ImageSubresourceLayers().setAspectMask(aspectFlags).setMipLevel(l).setBaseArrayLayer(0).setLayerCount(1))
-						.setDstOffsets(std::array<vk::Offset3D, 2>{vk::Offset3D(0, 0, 0), vk::Offset3D(max(1, width >> l), max(1, height >> l), 1)});
+						.setDstOffsets(std::array<vk::Offset3D, 2>{vk::Offset3D(0, 0, 0), vk::Offset3D(max(1, width >> l), max(1, height >> l), 1)}));
 				}
 
 				// Create command buffer
@@ -1686,7 +1700,7 @@ namespace VK
 				transferCommandBuffer.blitImage(
 					image, vk::ImageLayout::eGeneral,
 					image, vk::ImageLayout::eGeneral,
-					blitRegions,
+					toArrayProxy<const vk::ImageBlit>(blitRegions),
 					vk::Filter::eLinear
 				);
 				transferCommandBuffer.pipelineBarrier(
@@ -3530,8 +3544,8 @@ namespace VK
 		vk::SurfaceKHR surface;
 		vk::SwapchainKHR swapchain;
 
-		std::vector<vk::Image> images; //alternatively could call getSwapchainImages each time
-		std::vector<vk::CommandBuffer> commandBuffers;
+		CoreLib::List<vk::Image> images; //alternatively could call getSwapchainImages each time
+		CoreLib::List<vk::CommandBuffer> commandBuffers;
 		vk::Semaphore imageAvailableSemaphore;
 		vk::Semaphore renderingFinishedSemaphore;
 
@@ -3606,7 +3620,13 @@ namespace VK
 			swapchain = RendererState::Device().createSwapchainKHR(swapchainCreateInfo).value;
 			DestroySwapchain(oldSwapchain);
 
-			images = RendererState::Device().getSwapchainImagesKHR(swapchain).value;
+			unsigned int swapchainImageCount = 0;
+			vk::Result result = vk::Device().getSwapchainImagesKHR(swapchain, &swapchainImageCount, nullptr);
+			if (result == vk::Result::eSuccess && swapchainImageCount)
+				images.Reserve(swapchainImageCount);
+			else
+				throw HardwareRendererException("Failed to create swapchain");
+			RendererState::Device().getSwapchainImagesKHR(swapchain, &swapchainImageCount, images.Buffer());
 		}
 
 		virtual int GetSpireTarget() override
@@ -3621,9 +3641,10 @@ namespace VK
 			vk::CommandBufferAllocateInfo commandBufferAllocateInfo = vk::CommandBufferAllocateInfo()
 				.setCommandPool(RendererState::SwapchainCommandPool())
 				.setLevel(vk::CommandBufferLevel::ePrimary)
-				.setCommandBufferCount((uint32_t)images.size());
+				.setCommandBufferCount((uint32_t)images.Count());
 
-			commandBuffers = RendererState::Device().allocateCommandBuffers(commandBufferAllocateInfo).value;
+			commandBuffers.Reserve(commandBufferAllocateInfo.commandBufferCount);
+			RendererState::Device().allocateCommandBuffers(&commandBufferAllocateInfo, commandBuffers.Buffer());
 		}
 
 		void CreateSemaphores()
@@ -3670,7 +3691,7 @@ namespace VK
 
 		void Clear()
 		{
-			for (size_t image = 0; image < images.size(); image++)
+			for (size_t image = 0; image < images.Count(); image++)
 			{
 				//TODO: see if following line is beneficial
 				commandBuffers[image].reset(vk::CommandBufferResetFlags()); // implicitly done by begin
@@ -3768,10 +3789,10 @@ namespace VK
 			this->width = pwidth;
 			this->height = pheight;
 
-			size_t oldImageCount = images.size();
+			size_t oldImageCount = images.Count();
 
 			CreateSwapchain();
-			if (images.size() != oldImageCount) CreateCommandBuffers();
+			if (images.Count() != oldImageCount) CreateCommandBuffers();
 			//CreateSemaphores(); //TODO: Can the semaphores get stuck?
 
 			Clear(); //TODO: Should be "re-record" with old commands and new size?
