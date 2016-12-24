@@ -422,219 +422,11 @@ extern "C" {
 		if (!vkelVkLibHandle)
 			return VK_FALSE;
 
-
-		//__vkAcquireNextImageKHR = (PFN_vkAcquireNextImageKHR)vkelGetProcAddr("vkAcquireNextImageKHR");
-		//__vkAllocateCommandBuffers = (PFN_vkAllocateCommandBuffers)vkelGetProcAddr("vkAllocateCommandBuffers");
-		//__vkAllocateDescriptorSets = (PFN_vkAllocateDescriptorSets)vkelGetProcAddr("vkAllocateDescriptorSets");
-		//__vkAllocateMemory = (PFN_vkAllocateMemory)vkelGetProcAddr("vkAllocateMemory");
-		//__vkAllocationFunction = (PFN_vkAllocationFunction)vkelGetProcAddr("vkAllocationFunction");
-		//__vkBeginCommandBuffer = (PFN_vkBeginCommandBuffer)vkelGetProcAddr("vkBeginCommandBuffer");
-		//__vkBindBufferMemory = (PFN_vkBindBufferMemory)vkelGetProcAddr("vkBindBufferMemory");
-		//__vkBindImageMemory = (PFN_vkBindImageMemory)vkelGetProcAddr("vkBindImageMemory");
-		//__vkCmdBeginQuery = (PFN_vkCmdBeginQuery)vkelGetProcAddr("vkCmdBeginQuery");
-		//__vkCmdBeginRenderPass = (PFN_vkCmdBeginRenderPass)vkelGetProcAddr("vkCmdBeginRenderPass");
-		//__vkCmdBindDescriptorSets = (PFN_vkCmdBindDescriptorSets)vkelGetProcAddr("vkCmdBindDescriptorSets");
-		//__vkCmdBindIndexBuffer = (PFN_vkCmdBindIndexBuffer)vkelGetProcAddr("vkCmdBindIndexBuffer");
-		//__vkCmdBindPipeline = (PFN_vkCmdBindPipeline)vkelGetProcAddr("vkCmdBindPipeline");
-		//__vkCmdBindVertexBuffers = (PFN_vkCmdBindVertexBuffers)vkelGetProcAddr("vkCmdBindVertexBuffers");
-		//__vkCmdBlitImage = (PFN_vkCmdBlitImage)vkelGetProcAddr("vkCmdBlitImage");
-		//__vkCmdClearAttachments = (PFN_vkCmdClearAttachments)vkelGetProcAddr("vkCmdClearAttachments");
-		//__vkCmdClearColorImage = (PFN_vkCmdClearColorImage)vkelGetProcAddr("vkCmdClearColorImage");
-		//__vkCmdClearDepthStencilImage = (PFN_vkCmdClearDepthStencilImage)vkelGetProcAddr("vkCmdClearDepthStencilImage");
-		//__vkCmdCopyBuffer = (PFN_vkCmdCopyBuffer)vkelGetProcAddr("vkCmdCopyBuffer");
-		//__vkCmdCopyBufferToImage = (PFN_vkCmdCopyBufferToImage)vkelGetProcAddr("vkCmdCopyBufferToImage");
-		//__vkCmdCopyImage = (PFN_vkCmdCopyImage)vkelGetProcAddr("vkCmdCopyImage");
-		//__vkCmdCopyImageToBuffer = (PFN_vkCmdCopyImageToBuffer)vkelGetProcAddr("vkCmdCopyImageToBuffer");
-		//__vkCmdCopyQueryPoolResults = (PFN_vkCmdCopyQueryPoolResults)vkelGetProcAddr("vkCmdCopyQueryPoolResults");
-		//__vkCmdDebugMarkerBeginEXT = (PFN_vkCmdDebugMarkerBeginEXT)vkelGetProcAddr("vkCmdDebugMarkerBeginEXT");
-		//__vkCmdDebugMarkerEndEXT = (PFN_vkCmdDebugMarkerEndEXT)vkelGetProcAddr("vkCmdDebugMarkerEndEXT");
-		//__vkCmdDebugMarkerInsertEXT = (PFN_vkCmdDebugMarkerInsertEXT)vkelGetProcAddr("vkCmdDebugMarkerInsertEXT");
-		//__vkCmdDispatch = (PFN_vkCmdDispatch)vkelGetProcAddr("vkCmdDispatch");
-		//__vkCmdDispatchIndirect = (PFN_vkCmdDispatchIndirect)vkelGetProcAddr("vkCmdDispatchIndirect");
-		//__vkCmdDraw = (PFN_vkCmdDraw)vkelGetProcAddr("vkCmdDraw");
-		//__vkCmdDrawIndexed = (PFN_vkCmdDrawIndexed)vkelGetProcAddr("vkCmdDrawIndexed");
-		//__vkCmdDrawIndexedIndirect = (PFN_vkCmdDrawIndexedIndirect)vkelGetProcAddr("vkCmdDrawIndexedIndirect");
-		//__vkCmdDrawIndexedIndirectCountAMD = (PFN_vkCmdDrawIndexedIndirectCountAMD)vkelGetProcAddr("vkCmdDrawIndexedIndirectCountAMD");
-		//__vkCmdDrawIndirect = (PFN_vkCmdDrawIndirect)vkelGetProcAddr("vkCmdDrawIndirect");
-		//__vkCmdDrawIndirectCountAMD = (PFN_vkCmdDrawIndirectCountAMD)vkelGetProcAddr("vkCmdDrawIndirectCountAMD");
-		//__vkCmdEndQuery = (PFN_vkCmdEndQuery)vkelGetProcAddr("vkCmdEndQuery");
-		//__vkCmdEndRenderPass = (PFN_vkCmdEndRenderPass)vkelGetProcAddr("vkCmdEndRenderPass");
-		//__vkCmdExecuteCommands = (PFN_vkCmdExecuteCommands)vkelGetProcAddr("vkCmdExecuteCommands");
-		//__vkCmdFillBuffer = (PFN_vkCmdFillBuffer)vkelGetProcAddr("vkCmdFillBuffer");
-		//__vkCmdNextSubpass = (PFN_vkCmdNextSubpass)vkelGetProcAddr("vkCmdNextSubpass");
-		//__vkCmdPipelineBarrier = (PFN_vkCmdPipelineBarrier)vkelGetProcAddr("vkCmdPipelineBarrier");
-		//__vkCmdProcessCommandsNVX = (PFN_vkCmdProcessCommandsNVX)vkelGetProcAddr("vkCmdProcessCommandsNVX");
-		//__vkCmdPushConstants = (PFN_vkCmdPushConstants)vkelGetProcAddr("vkCmdPushConstants");
-		//__vkCmdReserveSpaceForCommandsNVX = (PFN_vkCmdReserveSpaceForCommandsNVX)vkelGetProcAddr("vkCmdReserveSpaceForCommandsNVX");
-		//__vkCmdResetEvent = (PFN_vkCmdResetEvent)vkelGetProcAddr("vkCmdResetEvent");
-		//__vkCmdResetQueryPool = (PFN_vkCmdResetQueryPool)vkelGetProcAddr("vkCmdResetQueryPool");
-		//__vkCmdResolveImage = (PFN_vkCmdResolveImage)vkelGetProcAddr("vkCmdResolveImage");
-		//__vkCmdSetBlendConstants = (PFN_vkCmdSetBlendConstants)vkelGetProcAddr("vkCmdSetBlendConstants");
-		//__vkCmdSetDepthBias = (PFN_vkCmdSetDepthBias)vkelGetProcAddr("vkCmdSetDepthBias");
-		//__vkCmdSetDepthBounds = (PFN_vkCmdSetDepthBounds)vkelGetProcAddr("vkCmdSetDepthBounds");
-		//__vkCmdSetEvent = (PFN_vkCmdSetEvent)vkelGetProcAddr("vkCmdSetEvent");
-		//__vkCmdSetLineWidth = (PFN_vkCmdSetLineWidth)vkelGetProcAddr("vkCmdSetLineWidth");
-		//__vkCmdSetScissor = (PFN_vkCmdSetScissor)vkelGetProcAddr("vkCmdSetScissor");
-		//__vkCmdSetStencilCompareMask = (PFN_vkCmdSetStencilCompareMask)vkelGetProcAddr("vkCmdSetStencilCompareMask");
-		//__vkCmdSetStencilReference = (PFN_vkCmdSetStencilReference)vkelGetProcAddr("vkCmdSetStencilReference");
-		//__vkCmdSetStencilWriteMask = (PFN_vkCmdSetStencilWriteMask)vkelGetProcAddr("vkCmdSetStencilWriteMask");
-		//__vkCmdSetViewport = (PFN_vkCmdSetViewport)vkelGetProcAddr("vkCmdSetViewport");
-		//__vkCmdUpdateBuffer = (PFN_vkCmdUpdateBuffer)vkelGetProcAddr("vkCmdUpdateBuffer");
-		//__vkCmdWaitEvents = (PFN_vkCmdWaitEvents)vkelGetProcAddr("vkCmdWaitEvents");
-		//__vkCmdWriteTimestamp = (PFN_vkCmdWriteTimestamp)vkelGetProcAddr("vkCmdWriteTimestamp");
-		//__vkCreateBuffer = (PFN_vkCreateBuffer)vkelGetProcAddr("vkCreateBuffer");
-		//__vkCreateBufferView = (PFN_vkCreateBufferView)vkelGetProcAddr("vkCreateBufferView");
-		//__vkCreateCommandPool = (PFN_vkCreateCommandPool)vkelGetProcAddr("vkCreateCommandPool");
-		//__vkCreateComputePipelines = (PFN_vkCreateComputePipelines)vkelGetProcAddr("vkCreateComputePipelines");
-		//__vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkelGetProcAddr("vkCreateDebugReportCallbackEXT");
-		//__vkCreateDescriptorPool = (PFN_vkCreateDescriptorPool)vkelGetProcAddr("vkCreateDescriptorPool");
-		//__vkCreateDescriptorSetLayout = (PFN_vkCreateDescriptorSetLayout)vkelGetProcAddr("vkCreateDescriptorSetLayout");
-		//__vkCreateDevice = (PFN_vkCreateDevice)vkelGetProcAddr("vkCreateDevice");
-		//__vkCreateDisplayModeKHR = (PFN_vkCreateDisplayModeKHR)vkelGetProcAddr("vkCreateDisplayModeKHR");
-		//__vkCreateDisplayPlaneSurfaceKHR = (PFN_vkCreateDisplayPlaneSurfaceKHR)vkelGetProcAddr("vkCreateDisplayPlaneSurfaceKHR");
-		//__vkCreateEvent = (PFN_vkCreateEvent)vkelGetProcAddr("vkCreateEvent");
-		//__vkCreateFence = (PFN_vkCreateFence)vkelGetProcAddr("vkCreateFence");
-		//__vkCreateFramebuffer = (PFN_vkCreateFramebuffer)vkelGetProcAddr("vkCreateFramebuffer");
-		//__vkCreateGraphicsPipelines = (PFN_vkCreateGraphicsPipelines)vkelGetProcAddr("vkCreateGraphicsPipelines");
-		//__vkCreateImage = (PFN_vkCreateImage)vkelGetProcAddr("vkCreateImage");
-		//__vkCreateImageView = (PFN_vkCreateImageView)vkelGetProcAddr("vkCreateImageView");
-		//__vkCreateIndirectCommandsLayoutNVX = (PFN_vkCreateIndirectCommandsLayoutNVX)vkelGetProcAddr("vkCreateIndirectCommandsLayoutNVX");
 		__vkCreateInstance = (PFN_vkCreateInstance)vkelGetProcAddr("vkCreateInstance");
-		//__vkCreateObjectTableNVX = (PFN_vkCreateObjectTableNVX)vkelGetProcAddr("vkCreateObjectTableNVX");
-		//__vkCreatePipelineCache = (PFN_vkCreatePipelineCache)vkelGetProcAddr("vkCreatePipelineCache");
-		//__vkCreatePipelineLayout = (PFN_vkCreatePipelineLayout)vkelGetProcAddr("vkCreatePipelineLayout");
-		//__vkCreateQueryPool = (PFN_vkCreateQueryPool)vkelGetProcAddr("vkCreateQueryPool");
-		//__vkCreateRenderPass = (PFN_vkCreateRenderPass)vkelGetProcAddr("vkCreateRenderPass");
-		//__vkCreateSampler = (PFN_vkCreateSampler)vkelGetProcAddr("vkCreateSampler");
-		//__vkCreateSemaphore = (PFN_vkCreateSemaphore)vkelGetProcAddr("vkCreateSemaphore");
-		//__vkCreateShaderModule = (PFN_vkCreateShaderModule)vkelGetProcAddr("vkCreateShaderModule");
-		//__vkCreateSharedSwapchainsKHR = (PFN_vkCreateSharedSwapchainsKHR)vkelGetProcAddr("vkCreateSharedSwapchainsKHR");
-		//__vkCreateSwapchainKHR = (PFN_vkCreateSwapchainKHR)vkelGetProcAddr("vkCreateSwapchainKHR");
-		//__vkDebugMarkerSetObjectNameEXT = (PFN_vkDebugMarkerSetObjectNameEXT)vkelGetProcAddr("vkDebugMarkerSetObjectNameEXT");
-		//__vkDebugMarkerSetObjectTagEXT = (PFN_vkDebugMarkerSetObjectTagEXT)vkelGetProcAddr("vkDebugMarkerSetObjectTagEXT");
-		//__vkDebugReportCallbackEXT = (PFN_vkDebugReportCallbackEXT)vkelGetProcAddr("vkDebugReportCallbackEXT");
-		//__vkDebugReportMessageEXT = (PFN_vkDebugReportMessageEXT)vkelGetProcAddr("vkDebugReportMessageEXT");
-		//__vkDestroyBuffer = (PFN_vkDestroyBuffer)vkelGetProcAddr("vkDestroyBuffer");
-		//__vkDestroyBufferView = (PFN_vkDestroyBufferView)vkelGetProcAddr("vkDestroyBufferView");
-		//__vkDestroyCommandPool = (PFN_vkDestroyCommandPool)vkelGetProcAddr("vkDestroyCommandPool");
-		//__vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkelGetProcAddr("vkDestroyDebugReportCallbackEXT");
-		//__vkDestroyDescriptorPool = (PFN_vkDestroyDescriptorPool)vkelGetProcAddr("vkDestroyDescriptorPool");
-		//__vkDestroyDescriptorSetLayout = (PFN_vkDestroyDescriptorSetLayout)vkelGetProcAddr("vkDestroyDescriptorSetLayout");
-		//__vkDestroyDevice = (PFN_vkDestroyDevice)vkelGetProcAddr("vkDestroyDevice");
-		//__vkDestroyEvent = (PFN_vkDestroyEvent)vkelGetProcAddr("vkDestroyEvent");
-		//__vkDestroyFence = (PFN_vkDestroyFence)vkelGetProcAddr("vkDestroyFence");
-		//__vkDestroyFramebuffer = (PFN_vkDestroyFramebuffer)vkelGetProcAddr("vkDestroyFramebuffer");
-		//__vkDestroyImage = (PFN_vkDestroyImage)vkelGetProcAddr("vkDestroyImage");
-		//__vkDestroyImageView = (PFN_vkDestroyImageView)vkelGetProcAddr("vkDestroyImageView");
-		//__vkDestroyIndirectCommandsLayoutNVX = (PFN_vkDestroyIndirectCommandsLayoutNVX)vkelGetProcAddr("vkDestroyIndirectCommandsLayoutNVX");
 		__vkDestroyInstance = (PFN_vkDestroyInstance)vkelGetProcAddr("vkDestroyInstance");
-		//__vkDestroyObjectTableNVX = (PFN_vkDestroyObjectTableNVX)vkelGetProcAddr("vkDestroyObjectTableNVX");
-		//__vkDestroyPipeline = (PFN_vkDestroyPipeline)vkelGetProcAddr("vkDestroyPipeline");
-		//__vkDestroyPipelineCache = (PFN_vkDestroyPipelineCache)vkelGetProcAddr("vkDestroyPipelineCache");
-		//__vkDestroyPipelineLayout = (PFN_vkDestroyPipelineLayout)vkelGetProcAddr("vkDestroyPipelineLayout");
-		//__vkDestroyQueryPool = (PFN_vkDestroyQueryPool)vkelGetProcAddr("vkDestroyQueryPool");
-		//__vkDestroyRenderPass = (PFN_vkDestroyRenderPass)vkelGetProcAddr("vkDestroyRenderPass");
-		//__vkDestroySampler = (PFN_vkDestroySampler)vkelGetProcAddr("vkDestroySampler");
-		//__vkDestroySemaphore = (PFN_vkDestroySemaphore)vkelGetProcAddr("vkDestroySemaphore");
-		//__vkDestroyShaderModule = (PFN_vkDestroyShaderModule)vkelGetProcAddr("vkDestroyShaderModule");
-		//__vkDestroySurfaceKHR = (PFN_vkDestroySurfaceKHR)vkelGetProcAddr("vkDestroySurfaceKHR");
-		//__vkDestroySwapchainKHR = (PFN_vkDestroySwapchainKHR)vkelGetProcAddr("vkDestroySwapchainKHR");
-		//__vkDeviceWaitIdle = (PFN_vkDeviceWaitIdle)vkelGetProcAddr("vkDeviceWaitIdle");
-		//__vkEndCommandBuffer = (PFN_vkEndCommandBuffer)vkelGetProcAddr("vkEndCommandBuffer");
-		//__vkEnumerateDeviceExtensionProperties = (PFN_vkEnumerateDeviceExtensionProperties)vkelGetProcAddr("vkEnumerateDeviceExtensionProperties");
-		//__vkEnumerateDeviceLayerProperties = (PFN_vkEnumerateDeviceLayerProperties)vkelGetProcAddr("vkEnumerateDeviceLayerProperties");
 		__vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)vkelGetProcAddr("vkEnumerateInstanceExtensionProperties");
 		__vkEnumerateInstanceLayerProperties = (PFN_vkEnumerateInstanceLayerProperties)vkelGetProcAddr("vkEnumerateInstanceLayerProperties");
-		//__vkEnumeratePhysicalDevices = (PFN_vkEnumeratePhysicalDevices)vkelGetProcAddr("vkEnumeratePhysicalDevices");
-		//__vkFlushMappedMemoryRanges = (PFN_vkFlushMappedMemoryRanges)vkelGetProcAddr("vkFlushMappedMemoryRanges");
-		//__vkFreeCommandBuffers = (PFN_vkFreeCommandBuffers)vkelGetProcAddr("vkFreeCommandBuffers");
-		//__vkFreeDescriptorSets = (PFN_vkFreeDescriptorSets)vkelGetProcAddr("vkFreeDescriptorSets");
-		//__vkFreeFunction = (PFN_vkFreeFunction)vkelGetProcAddr("vkFreeFunction");
-		//__vkFreeMemory = (PFN_vkFreeMemory)vkelGetProcAddr("vkFreeMemory");
-		//__vkGetBufferMemoryRequirements = (PFN_vkGetBufferMemoryRequirements)vkelGetProcAddr("vkGetBufferMemoryRequirements");
-		//__vkGetDeviceMemoryCommitment = (PFN_vkGetDeviceMemoryCommitment)vkelGetProcAddr("vkGetDeviceMemoryCommitment");
-		//__vkGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)vkelGetProcAddr("vkGetDeviceProcAddr");
-		//__vkGetDeviceQueue = (PFN_vkGetDeviceQueue)vkelGetProcAddr("vkGetDeviceQueue");
-		//__vkGetDisplayModePropertiesKHR = (PFN_vkGetDisplayModePropertiesKHR)vkelGetProcAddr("vkGetDisplayModePropertiesKHR");
-		//__vkGetDisplayPlaneCapabilitiesKHR = (PFN_vkGetDisplayPlaneCapabilitiesKHR)vkelGetProcAddr("vkGetDisplayPlaneCapabilitiesKHR");
-		//__vkGetDisplayPlaneSupportedDisplaysKHR = (PFN_vkGetDisplayPlaneSupportedDisplaysKHR)vkelGetProcAddr("vkGetDisplayPlaneSupportedDisplaysKHR");
-		//__vkGetEventStatus = (PFN_vkGetEventStatus)vkelGetProcAddr("vkGetEventStatus");
-		//__vkGetFenceStatus = (PFN_vkGetFenceStatus)vkelGetProcAddr("vkGetFenceStatus");
-		//__vkGetImageMemoryRequirements = (PFN_vkGetImageMemoryRequirements)vkelGetProcAddr("vkGetImageMemoryRequirements");
-		//__vkGetImageSparseMemoryRequirements = (PFN_vkGetImageSparseMemoryRequirements)vkelGetProcAddr("vkGetImageSparseMemoryRequirements");
-		//__vkGetImageSubresourceLayout = (PFN_vkGetImageSubresourceLayout)vkelGetProcAddr("vkGetImageSubresourceLayout");
 		__vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)vkelGetProcAddr("vkGetInstanceProcAddr");
-//		__vkGetPhysicalDeviceDisplayPlanePropertiesKHR = (PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR)vkelGetProcAddr("vkGetPhysicalDeviceDisplayPlanePropertiesKHR");
-//		__vkGetPhysicalDeviceDisplayPropertiesKHR = (PFN_vkGetPhysicalDeviceDisplayPropertiesKHR)vkelGetProcAddr("vkGetPhysicalDeviceDisplayPropertiesKHR");
-//		__vkGetPhysicalDeviceExternalImageFormatPropertiesNV = (PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV)vkelGetProcAddr("vkGetPhysicalDeviceExternalImageFormatPropertiesNV");
-//		__vkGetPhysicalDeviceFeatures = (PFN_vkGetPhysicalDeviceFeatures)vkelGetProcAddr("vkGetPhysicalDeviceFeatures");
-//		__vkGetPhysicalDeviceFormatProperties = (PFN_vkGetPhysicalDeviceFormatProperties)vkelGetProcAddr("vkGetPhysicalDeviceFormatProperties");
-//		__vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX = (PFN_vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX)vkelGetProcAddr("vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX");
-//		__vkGetPhysicalDeviceImageFormatProperties = (PFN_vkGetPhysicalDeviceImageFormatProperties)vkelGetProcAddr("vkGetPhysicalDeviceImageFormatProperties");
-//		__vkGetPhysicalDeviceMemoryProperties = (PFN_vkGetPhysicalDeviceMemoryProperties)vkelGetProcAddr("vkGetPhysicalDeviceMemoryProperties");
-//		__vkGetPhysicalDeviceProperties = (PFN_vkGetPhysicalDeviceProperties)vkelGetProcAddr("vkGetPhysicalDeviceProperties");
-//		__vkGetPhysicalDeviceQueueFamilyProperties = (PFN_vkGetPhysicalDeviceQueueFamilyProperties)vkelGetProcAddr("vkGetPhysicalDeviceQueueFamilyProperties");
-//		__vkGetPhysicalDeviceSparseImageFormatProperties = (PFN_vkGetPhysicalDeviceSparseImageFormatProperties)vkelGetProcAddr("vkGetPhysicalDeviceSparseImageFormatProperties");
-//		__vkGetPhysicalDeviceSurfaceCapabilitiesKHR = (PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR)vkelGetProcAddr("vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
-//		__vkGetPhysicalDeviceSurfaceFormatsKHR = (PFN_vkGetPhysicalDeviceSurfaceFormatsKHR)vkelGetProcAddr("vkGetPhysicalDeviceSurfaceFormatsKHR");
-//		__vkGetPhysicalDeviceSurfacePresentModesKHR = (PFN_vkGetPhysicalDeviceSurfacePresentModesKHR)vkelGetProcAddr("vkGetPhysicalDeviceSurfacePresentModesKHR");
-//		__vkGetPhysicalDeviceSurfaceSupportKHR = (PFN_vkGetPhysicalDeviceSurfaceSupportKHR)vkelGetProcAddr("vkGetPhysicalDeviceSurfaceSupportKHR");
-//		__vkGetPipelineCacheData = (PFN_vkGetPipelineCacheData)vkelGetProcAddr("vkGetPipelineCacheData");
-//		__vkGetQueryPoolResults = (PFN_vkGetQueryPoolResults)vkelGetProcAddr("vkGetQueryPoolResults");
-//		__vkGetRenderAreaGranularity = (PFN_vkGetRenderAreaGranularity)vkelGetProcAddr("vkGetRenderAreaGranularity");
-//		__vkGetSwapchainImagesKHR = (PFN_vkGetSwapchainImagesKHR)vkelGetProcAddr("vkGetSwapchainImagesKHR");
-//		__vkInternalAllocationNotification = (PFN_vkInternalAllocationNotification)vkelGetProcAddr("vkInternalAllocationNotification");
-//		__vkInternalFreeNotification = (PFN_vkInternalFreeNotification)vkelGetProcAddr("vkInternalFreeNotification");
-//		__vkInvalidateMappedMemoryRanges = (PFN_vkInvalidateMappedMemoryRanges)vkelGetProcAddr("vkInvalidateMappedMemoryRanges");
-//		__vkMapMemory = (PFN_vkMapMemory)vkelGetProcAddr("vkMapMemory");
-//		__vkMergePipelineCaches = (PFN_vkMergePipelineCaches)vkelGetProcAddr("vkMergePipelineCaches");
-//		__vkQueueBindSparse = (PFN_vkQueueBindSparse)vkelGetProcAddr("vkQueueBindSparse");
-//		__vkQueuePresentKHR = (PFN_vkQueuePresentKHR)vkelGetProcAddr("vkQueuePresentKHR");
-//		__vkQueueSubmit = (PFN_vkQueueSubmit)vkelGetProcAddr("vkQueueSubmit");
-//		__vkQueueWaitIdle = (PFN_vkQueueWaitIdle)vkelGetProcAddr("vkQueueWaitIdle");
-//		__vkReallocationFunction = (PFN_vkReallocationFunction)vkelGetProcAddr("vkReallocationFunction");
-//		__vkRegisterObjectsNVX = (PFN_vkRegisterObjectsNVX)vkelGetProcAddr("vkRegisterObjectsNVX");
-//		__vkResetCommandBuffer = (PFN_vkResetCommandBuffer)vkelGetProcAddr("vkResetCommandBuffer");
-//		__vkResetCommandPool = (PFN_vkResetCommandPool)vkelGetProcAddr("vkResetCommandPool");
-//		__vkResetDescriptorPool = (PFN_vkResetDescriptorPool)vkelGetProcAddr("vkResetDescriptorPool");
-//		__vkResetEvent = (PFN_vkResetEvent)vkelGetProcAddr("vkResetEvent");
-//		__vkResetFences = (PFN_vkResetFences)vkelGetProcAddr("vkResetFences");
-//		__vkSetEvent = (PFN_vkSetEvent)vkelGetProcAddr("vkSetEvent");
-//		__vkUnmapMemory = (PFN_vkUnmapMemory)vkelGetProcAddr("vkUnmapMemory");
-//		__vkUnregisterObjectsNVX = (PFN_vkUnregisterObjectsNVX)vkelGetProcAddr("vkUnregisterObjectsNVX");
-//		__vkUpdateDescriptorSets = (PFN_vkUpdateDescriptorSets)vkelGetProcAddr("vkUpdateDescriptorSets");
-//		__vkVoidFunction = (PFN_vkVoidFunction)vkelGetProcAddr("vkVoidFunction");
-//		__vkWaitForFences = (PFN_vkWaitForFences)vkelGetProcAddr("vkWaitForFences");
-//
-//#ifdef VK_USE_PLATFORM_ANDROID_KHR
-//		__vkCreateAndroidSurfaceKHR = (PFN_vkCreateAndroidSurfaceKHR)vkelGetProcAddr("vkCreateAndroidSurfaceKHR");
-//#endif /* VK_USE_PLATFORM_ANDROID_KHR */
-//
-//#ifdef VK_USE_PLATFORM_MIR_KHR
-//		__vkCreateMirSurfaceKHR = (PFN_vkCreateMirSurfaceKHR)vkelGetProcAddr("vkCreateMirSurfaceKHR");
-//		__vkGetPhysicalDeviceMirPresentationSupportKHR = (PFN_vkGetPhysicalDeviceMirPresentationSupportKHR)vkelGetProcAddr("vkGetPhysicalDeviceMirPresentationSupportKHR");
-//#endif /* VK_USE_PLATFORM_MIR_KHR */
-//
-//#ifdef VK_USE_PLATFORM_WAYLAND_KHR
-//		__vkCreateWaylandSurfaceKHR = (PFN_vkCreateWaylandSurfaceKHR)vkelGetProcAddr("vkCreateWaylandSurfaceKHR");
-//		__vkGetPhysicalDeviceWaylandPresentationSupportKHR = (PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR)vkelGetProcAddr("vkGetPhysicalDeviceWaylandPresentationSupportKHR");
-//#endif /* VK_USE_PLATFORM_WAYLAND_KHR */
-//
-//#ifdef VK_USE_PLATFORM_WIN32_KHR
-//		__vkCreateWin32SurfaceKHR = (PFN_vkCreateWin32SurfaceKHR)vkelGetProcAddr("vkCreateWin32SurfaceKHR");
-//		__vkGetMemoryWin32HandleNV = (PFN_vkGetMemoryWin32HandleNV)vkelGetProcAddr("vkGetMemoryWin32HandleNV");
-//		__vkGetPhysicalDeviceWin32PresentationSupportKHR = (PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)vkelGetProcAddr("vkGetPhysicalDeviceWin32PresentationSupportKHR");
-//#endif /* VK_USE_PLATFORM_WIN32_KHR */
-//
-//#ifdef VK_USE_PLATFORM_XCB_KHR
-//		__vkCreateXcbSurfaceKHR = (PFN_vkCreateXcbSurfaceKHR)vkelGetProcAddr("vkCreateXcbSurfaceKHR");
-//		__vkGetPhysicalDeviceXcbPresentationSupportKHR = (PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)vkelGetProcAddr("vkGetPhysicalDeviceXcbPresentationSupportKHR");
-//#endif /* VK_USE_PLATFORM_XCB_KHR */
-//
-//#ifdef VK_USE_PLATFORM_XLIB_KHR
-//		__vkCreateXlibSurfaceKHR = (PFN_vkCreateXlibSurfaceKHR)vkelGetProcAddr("vkCreateXlibSurfaceKHR");
-//		__vkGetPhysicalDeviceXlibPresentationSupportKHR = (PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)vkelGetProcAddr("vkGetPhysicalDeviceXlibPresentationSupportKHR");
-//#endif /* VK_USE_PLATFORM_XLIB_KHR */
 
 		return VK_TRUE;
 	}
@@ -644,148 +436,18 @@ extern "C" {
 		if (!vkelVkLibHandle && !vkelInit())
 			return VK_FALSE;
 
-
-		//__vkAcquireNextImageKHR = (PFN_vkAcquireNextImageKHR)vkelGetInstanceProcAddr(instance, "vkAcquireNextImageKHR");
-		//__vkAllocateCommandBuffers = (PFN_vkAllocateCommandBuffers)vkelGetInstanceProcAddr(instance, "vkAllocateCommandBuffers");
-		//__vkAllocateDescriptorSets = (PFN_vkAllocateDescriptorSets)vkelGetInstanceProcAddr(instance, "vkAllocateDescriptorSets");
-		//__vkAllocateMemory = (PFN_vkAllocateMemory)vkelGetInstanceProcAddr(instance, "vkAllocateMemory");
-		//__vkAllocationFunction = (PFN_vkAllocationFunction)vkelGetInstanceProcAddr(instance, "vkAllocationFunction");
-		//__vkBeginCommandBuffer = (PFN_vkBeginCommandBuffer)vkelGetInstanceProcAddr(instance, "vkBeginCommandBuffer");
-		//__vkBindBufferMemory = (PFN_vkBindBufferMemory)vkelGetInstanceProcAddr(instance, "vkBindBufferMemory");
-		//__vkBindImageMemory = (PFN_vkBindImageMemory)vkelGetInstanceProcAddr(instance, "vkBindImageMemory");
-		//__vkCmdBeginQuery = (PFN_vkCmdBeginQuery)vkelGetInstanceProcAddr(instance, "vkCmdBeginQuery");
-		//__vkCmdBeginRenderPass = (PFN_vkCmdBeginRenderPass)vkelGetInstanceProcAddr(instance, "vkCmdBeginRenderPass");
-		//__vkCmdBindDescriptorSets = (PFN_vkCmdBindDescriptorSets)vkelGetInstanceProcAddr(instance, "vkCmdBindDescriptorSets");
-		//__vkCmdBindIndexBuffer = (PFN_vkCmdBindIndexBuffer)vkelGetInstanceProcAddr(instance, "vkCmdBindIndexBuffer");
-		//__vkCmdBindPipeline = (PFN_vkCmdBindPipeline)vkelGetInstanceProcAddr(instance, "vkCmdBindPipeline");
-		//__vkCmdBindVertexBuffers = (PFN_vkCmdBindVertexBuffers)vkelGetInstanceProcAddr(instance, "vkCmdBindVertexBuffers");
-		//__vkCmdBlitImage = (PFN_vkCmdBlitImage)vkelGetInstanceProcAddr(instance, "vkCmdBlitImage");
-		//__vkCmdClearAttachments = (PFN_vkCmdClearAttachments)vkelGetInstanceProcAddr(instance, "vkCmdClearAttachments");
-		//__vkCmdClearColorImage = (PFN_vkCmdClearColorImage)vkelGetInstanceProcAddr(instance, "vkCmdClearColorImage");
-		//__vkCmdClearDepthStencilImage = (PFN_vkCmdClearDepthStencilImage)vkelGetInstanceProcAddr(instance, "vkCmdClearDepthStencilImage");
-		//__vkCmdCopyBuffer = (PFN_vkCmdCopyBuffer)vkelGetInstanceProcAddr(instance, "vkCmdCopyBuffer");
-		//__vkCmdCopyBufferToImage = (PFN_vkCmdCopyBufferToImage)vkelGetInstanceProcAddr(instance, "vkCmdCopyBufferToImage");
-		//__vkCmdCopyImage = (PFN_vkCmdCopyImage)vkelGetInstanceProcAddr(instance, "vkCmdCopyImage");
-		//__vkCmdCopyImageToBuffer = (PFN_vkCmdCopyImageToBuffer)vkelGetInstanceProcAddr(instance, "vkCmdCopyImageToBuffer");
-		//__vkCmdCopyQueryPoolResults = (PFN_vkCmdCopyQueryPoolResults)vkelGetInstanceProcAddr(instance, "vkCmdCopyQueryPoolResults");
-		//__vkCmdDebugMarkerBeginEXT = (PFN_vkCmdDebugMarkerBeginEXT)vkelGetInstanceProcAddr(instance, "vkCmdDebugMarkerBeginEXT");
-		//__vkCmdDebugMarkerEndEXT = (PFN_vkCmdDebugMarkerEndEXT)vkelGetInstanceProcAddr(instance, "vkCmdDebugMarkerEndEXT");
-		//__vkCmdDebugMarkerInsertEXT = (PFN_vkCmdDebugMarkerInsertEXT)vkelGetInstanceProcAddr(instance, "vkCmdDebugMarkerInsertEXT");
-		//__vkCmdDispatch = (PFN_vkCmdDispatch)vkelGetInstanceProcAddr(instance, "vkCmdDispatch");
-		//__vkCmdDispatchIndirect = (PFN_vkCmdDispatchIndirect)vkelGetInstanceProcAddr(instance, "vkCmdDispatchIndirect");
-		//__vkCmdDraw = (PFN_vkCmdDraw)vkelGetInstanceProcAddr(instance, "vkCmdDraw");
-		//__vkCmdDrawIndexed = (PFN_vkCmdDrawIndexed)vkelGetInstanceProcAddr(instance, "vkCmdDrawIndexed");
-		//__vkCmdDrawIndexedIndirect = (PFN_vkCmdDrawIndexedIndirect)vkelGetInstanceProcAddr(instance, "vkCmdDrawIndexedIndirect");
-		//__vkCmdDrawIndexedIndirectCountAMD = (PFN_vkCmdDrawIndexedIndirectCountAMD)vkelGetInstanceProcAddr(instance, "vkCmdDrawIndexedIndirectCountAMD");
-		//__vkCmdDrawIndirect = (PFN_vkCmdDrawIndirect)vkelGetInstanceProcAddr(instance, "vkCmdDrawIndirect");
-		//__vkCmdDrawIndirectCountAMD = (PFN_vkCmdDrawIndirectCountAMD)vkelGetInstanceProcAddr(instance, "vkCmdDrawIndirectCountAMD");
-		//__vkCmdEndQuery = (PFN_vkCmdEndQuery)vkelGetInstanceProcAddr(instance, "vkCmdEndQuery");
-		//__vkCmdEndRenderPass = (PFN_vkCmdEndRenderPass)vkelGetInstanceProcAddr(instance, "vkCmdEndRenderPass");
-		//__vkCmdExecuteCommands = (PFN_vkCmdExecuteCommands)vkelGetInstanceProcAddr(instance, "vkCmdExecuteCommands");
-		//__vkCmdFillBuffer = (PFN_vkCmdFillBuffer)vkelGetInstanceProcAddr(instance, "vkCmdFillBuffer");
-		//__vkCmdNextSubpass = (PFN_vkCmdNextSubpass)vkelGetInstanceProcAddr(instance, "vkCmdNextSubpass");
-		//__vkCmdPipelineBarrier = (PFN_vkCmdPipelineBarrier)vkelGetInstanceProcAddr(instance, "vkCmdPipelineBarrier");
-		//__vkCmdProcessCommandsNVX = (PFN_vkCmdProcessCommandsNVX)vkelGetInstanceProcAddr(instance, "vkCmdProcessCommandsNVX");
-		//__vkCmdPushConstants = (PFN_vkCmdPushConstants)vkelGetInstanceProcAddr(instance, "vkCmdPushConstants");
-		//__vkCmdReserveSpaceForCommandsNVX = (PFN_vkCmdReserveSpaceForCommandsNVX)vkelGetInstanceProcAddr(instance, "vkCmdReserveSpaceForCommandsNVX");
-		//__vkCmdResetEvent = (PFN_vkCmdResetEvent)vkelGetInstanceProcAddr(instance, "vkCmdResetEvent");
-		//__vkCmdResetQueryPool = (PFN_vkCmdResetQueryPool)vkelGetInstanceProcAddr(instance, "vkCmdResetQueryPool");
-		//__vkCmdResolveImage = (PFN_vkCmdResolveImage)vkelGetInstanceProcAddr(instance, "vkCmdResolveImage");
-		//__vkCmdSetBlendConstants = (PFN_vkCmdSetBlendConstants)vkelGetInstanceProcAddr(instance, "vkCmdSetBlendConstants");
-		//__vkCmdSetDepthBias = (PFN_vkCmdSetDepthBias)vkelGetInstanceProcAddr(instance, "vkCmdSetDepthBias");
-		//__vkCmdSetDepthBounds = (PFN_vkCmdSetDepthBounds)vkelGetInstanceProcAddr(instance, "vkCmdSetDepthBounds");
-		//__vkCmdSetEvent = (PFN_vkCmdSetEvent)vkelGetInstanceProcAddr(instance, "vkCmdSetEvent");
-		//__vkCmdSetLineWidth = (PFN_vkCmdSetLineWidth)vkelGetInstanceProcAddr(instance, "vkCmdSetLineWidth");
-		//__vkCmdSetScissor = (PFN_vkCmdSetScissor)vkelGetInstanceProcAddr(instance, "vkCmdSetScissor");
-		//__vkCmdSetStencilCompareMask = (PFN_vkCmdSetStencilCompareMask)vkelGetInstanceProcAddr(instance, "vkCmdSetStencilCompareMask");
-		//__vkCmdSetStencilReference = (PFN_vkCmdSetStencilReference)vkelGetInstanceProcAddr(instance, "vkCmdSetStencilReference");
-		//__vkCmdSetStencilWriteMask = (PFN_vkCmdSetStencilWriteMask)vkelGetInstanceProcAddr(instance, "vkCmdSetStencilWriteMask");
-		//__vkCmdSetViewport = (PFN_vkCmdSetViewport)vkelGetInstanceProcAddr(instance, "vkCmdSetViewport");
-		//__vkCmdUpdateBuffer = (PFN_vkCmdUpdateBuffer)vkelGetInstanceProcAddr(instance, "vkCmdUpdateBuffer");
-		//__vkCmdWaitEvents = (PFN_vkCmdWaitEvents)vkelGetInstanceProcAddr(instance, "vkCmdWaitEvents");
-		//__vkCmdWriteTimestamp = (PFN_vkCmdWriteTimestamp)vkelGetInstanceProcAddr(instance, "vkCmdWriteTimestamp");
-		//__vkCreateBuffer = (PFN_vkCreateBuffer)vkelGetInstanceProcAddr(instance, "vkCreateBuffer");
-		//__vkCreateBufferView = (PFN_vkCreateBufferView)vkelGetInstanceProcAddr(instance, "vkCreateBufferView");
-		//__vkCreateCommandPool = (PFN_vkCreateCommandPool)vkelGetInstanceProcAddr(instance, "vkCreateCommandPool");
-		//__vkCreateComputePipelines = (PFN_vkCreateComputePipelines)vkelGetInstanceProcAddr(instance, "vkCreateComputePipelines");
 		__vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkelGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
-		//__vkCreateDescriptorPool = (PFN_vkCreateDescriptorPool)vkelGetInstanceProcAddr(instance, "vkCreateDescriptorPool");
-		//__vkCreateDescriptorSetLayout = (PFN_vkCreateDescriptorSetLayout)vkelGetInstanceProcAddr(instance, "vkCreateDescriptorSetLayout");
 		__vkCreateDevice = (PFN_vkCreateDevice)vkelGetInstanceProcAddr(instance, "vkCreateDevice");
 		__vkCreateDisplayModeKHR = (PFN_vkCreateDisplayModeKHR)vkelGetInstanceProcAddr(instance, "vkCreateDisplayModeKHR");
 		__vkCreateDisplayPlaneSurfaceKHR = (PFN_vkCreateDisplayPlaneSurfaceKHR)vkelGetInstanceProcAddr(instance, "vkCreateDisplayPlaneSurfaceKHR");
-		//__vkCreateEvent = (PFN_vkCreateEvent)vkelGetInstanceProcAddr(instance, "vkCreateEvent");
-		//__vkCreateFence = (PFN_vkCreateFence)vkelGetInstanceProcAddr(instance, "vkCreateFence");
-		//__vkCreateFramebuffer = (PFN_vkCreateFramebuffer)vkelGetInstanceProcAddr(instance, "vkCreateFramebuffer");
-		//__vkCreateGraphicsPipelines = (PFN_vkCreateGraphicsPipelines)vkelGetInstanceProcAddr(instance, "vkCreateGraphicsPipelines");
-		//__vkCreateImage = (PFN_vkCreateImage)vkelGetInstanceProcAddr(instance, "vkCreateImage");
-		//__vkCreateImageView = (PFN_vkCreateImageView)vkelGetInstanceProcAddr(instance, "vkCreateImageView");
-		//__vkCreateIndirectCommandsLayoutNVX = (PFN_vkCreateIndirectCommandsLayoutNVX)vkelGetInstanceProcAddr(instance, "vkCreateIndirectCommandsLayoutNVX");
-		//__vkCreateInstance = (PFN_vkCreateInstance)vkelGetInstanceProcAddr(instance, "vkCreateInstance");
-		//__vkCreateObjectTableNVX = (PFN_vkCreateObjectTableNVX)vkelGetInstanceProcAddr(instance, "vkCreateObjectTableNVX");
-		//__vkCreatePipelineCache = (PFN_vkCreatePipelineCache)vkelGetInstanceProcAddr(instance, "vkCreatePipelineCache");
-		//__vkCreatePipelineLayout = (PFN_vkCreatePipelineLayout)vkelGetInstanceProcAddr(instance, "vkCreatePipelineLayout");
-		//__vkCreateQueryPool = (PFN_vkCreateQueryPool)vkelGetInstanceProcAddr(instance, "vkCreateQueryPool");
-		//__vkCreateRenderPass = (PFN_vkCreateRenderPass)vkelGetInstanceProcAddr(instance, "vkCreateRenderPass");
-		//__vkCreateSampler = (PFN_vkCreateSampler)vkelGetInstanceProcAddr(instance, "vkCreateSampler");
-		//__vkCreateSemaphore = (PFN_vkCreateSemaphore)vkelGetInstanceProcAddr(instance, "vkCreateSemaphore");
-		//__vkCreateShaderModule = (PFN_vkCreateShaderModule)vkelGetInstanceProcAddr(instance, "vkCreateShaderModule");
-		//__vkCreateSharedSwapchainsKHR = (PFN_vkCreateSharedSwapchainsKHR)vkelGetInstanceProcAddr(instance, "vkCreateSharedSwapchainsKHR");
-		//__vkCreateSwapchainKHR = (PFN_vkCreateSwapchainKHR)vkelGetInstanceProcAddr(instance, "vkCreateSwapchainKHR");
-		//__vkDebugMarkerSetObjectNameEXT = (PFN_vkDebugMarkerSetObjectNameEXT)vkelGetInstanceProcAddr(instance, "vkDebugMarkerSetObjectNameEXT");
-		//__vkDebugMarkerSetObjectTagEXT = (PFN_vkDebugMarkerSetObjectTagEXT)vkelGetInstanceProcAddr(instance, "vkDebugMarkerSetObjectTagEXT");
 		__vkDebugReportCallbackEXT = (PFN_vkDebugReportCallbackEXT)vkelGetInstanceProcAddr(instance, "vkDebugReportCallbackEXT");
-		//__vkDebugReportMessageEXT = (PFN_vkDebugReportMessageEXT)vkelGetInstanceProcAddr(instance, "vkDebugReportMessageEXT");
-		//__vkDestroyBuffer = (PFN_vkDestroyBuffer)vkelGetInstanceProcAddr(instance, "vkDestroyBuffer");
-		//__vkDestroyBufferView = (PFN_vkDestroyBufferView)vkelGetInstanceProcAddr(instance, "vkDestroyBufferView");
-		//__vkDestroyCommandPool = (PFN_vkDestroyCommandPool)vkelGetInstanceProcAddr(instance, "vkDestroyCommandPool");
 		__vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkelGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
-		//__vkDestroyDescriptorPool = (PFN_vkDestroyDescriptorPool)vkelGetInstanceProcAddr(instance, "vkDestroyDescriptorPool");
-		//__vkDestroyDescriptorSetLayout = (PFN_vkDestroyDescriptorSetLayout)vkelGetInstanceProcAddr(instance, "vkDestroyDescriptorSetLayout");
 		__vkDestroyDevice = (PFN_vkDestroyDevice)vkelGetInstanceProcAddr(instance, "vkDestroyDevice");
-		//__vkDestroyEvent = (PFN_vkDestroyEvent)vkelGetInstanceProcAddr(instance, "vkDestroyEvent");
-		//__vkDestroyFence = (PFN_vkDestroyFence)vkelGetInstanceProcAddr(instance, "vkDestroyFence");
-		//__vkDestroyFramebuffer = (PFN_vkDestroyFramebuffer)vkelGetInstanceProcAddr(instance, "vkDestroyFramebuffer");
-		//__vkDestroyImage = (PFN_vkDestroyImage)vkelGetInstanceProcAddr(instance, "vkDestroyImage");
-		//__vkDestroyImageView = (PFN_vkDestroyImageView)vkelGetInstanceProcAddr(instance, "vkDestroyImageView");
-		//__vkDestroyIndirectCommandsLayoutNVX = (PFN_vkDestroyIndirectCommandsLayoutNVX)vkelGetInstanceProcAddr(instance, "vkDestroyIndirectCommandsLayoutNVX");
-		//__vkDestroyInstance = (PFN_vkDestroyInstance)vkelGetInstanceProcAddr(instance, "vkDestroyInstance");
-		//__vkDestroyObjectTableNVX = (PFN_vkDestroyObjectTableNVX)vkelGetInstanceProcAddr(instance, "vkDestroyObjectTableNVX");
-		//__vkDestroyPipeline = (PFN_vkDestroyPipeline)vkelGetInstanceProcAddr(instance, "vkDestroyPipeline");
-		//__vkDestroyPipelineCache = (PFN_vkDestroyPipelineCache)vkelGetInstanceProcAddr(instance, "vkDestroyPipelineCache");
-		//__vkDestroyPipelineLayout = (PFN_vkDestroyPipelineLayout)vkelGetInstanceProcAddr(instance, "vkDestroyPipelineLayout");
-		//__vkDestroyQueryPool = (PFN_vkDestroyQueryPool)vkelGetInstanceProcAddr(instance, "vkDestroyQueryPool");
-		//__vkDestroyRenderPass = (PFN_vkDestroyRenderPass)vkelGetInstanceProcAddr(instance, "vkDestroyRenderPass");
-		//__vkDestroySampler = (PFN_vkDestroySampler)vkelGetInstanceProcAddr(instance, "vkDestroySampler");
-		//__vkDestroySemaphore = (PFN_vkDestroySemaphore)vkelGetInstanceProcAddr(instance, "vkDestroySemaphore");
-		//__vkDestroyShaderModule = (PFN_vkDestroyShaderModule)vkelGetInstanceProcAddr(instance, "vkDestroyShaderModule");
 		__vkDestroySurfaceKHR = (PFN_vkDestroySurfaceKHR)vkelGetInstanceProcAddr(instance, "vkDestroySurfaceKHR");
-		//__vkDestroySwapchainKHR = (PFN_vkDestroySwapchainKHR)vkelGetInstanceProcAddr(instance, "vkDestroySwapchainKHR");
-		//__vkDeviceWaitIdle = (PFN_vkDeviceWaitIdle)vkelGetInstanceProcAddr(instance, "vkDeviceWaitIdle");
-		//__vkEndCommandBuffer = (PFN_vkEndCommandBuffer)vkelGetInstanceProcAddr(instance, "vkEndCommandBuffer");
 		__vkEnumerateDeviceExtensionProperties = (PFN_vkEnumerateDeviceExtensionProperties)vkelGetInstanceProcAddr(instance, "vkEnumerateDeviceExtensionProperties");
 		__vkEnumerateDeviceLayerProperties = (PFN_vkEnumerateDeviceLayerProperties)vkelGetInstanceProcAddr(instance, "vkEnumerateDeviceLayerProperties");
-		//__vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)vkelGetInstanceProcAddr(instance, "vkEnumerateInstanceExtensionProperties");
-		//__vkEnumerateInstanceLayerProperties = (PFN_vkEnumerateInstanceLayerProperties)vkelGetInstanceProcAddr(instance, "vkEnumerateInstanceLayerProperties");
 		__vkEnumeratePhysicalDevices = (PFN_vkEnumeratePhysicalDevices)vkelGetInstanceProcAddr(instance, "vkEnumeratePhysicalDevices");
-		//__vkFlushMappedMemoryRanges = (PFN_vkFlushMappedMemoryRanges)vkelGetInstanceProcAddr(instance, "vkFlushMappedMemoryRanges");
-		//__vkFreeCommandBuffers = (PFN_vkFreeCommandBuffers)vkelGetInstanceProcAddr(instance, "vkFreeCommandBuffers");
-		//__vkFreeDescriptorSets = (PFN_vkFreeDescriptorSets)vkelGetInstanceProcAddr(instance, "vkFreeDescriptorSets");
-		//__vkFreeFunction = (PFN_vkFreeFunction)vkelGetInstanceProcAddr(instance, "vkFreeFunction");
-		//__vkFreeMemory = (PFN_vkFreeMemory)vkelGetInstanceProcAddr(instance, "vkFreeMemory");
-		//__vkGetBufferMemoryRequirements = (PFN_vkGetBufferMemoryRequirements)vkelGetInstanceProcAddr(instance, "vkGetBufferMemoryRequirements");
-		//__vkGetDeviceMemoryCommitment = (PFN_vkGetDeviceMemoryCommitment)vkelGetInstanceProcAddr(instance, "vkGetDeviceMemoryCommitment");
 		__vkGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)vkelGetInstanceProcAddr(instance, "vkGetDeviceProcAddr");
-		//__vkGetDeviceQueue = (PFN_vkGetDeviceQueue)vkelGetInstanceProcAddr(instance, "vkGetDeviceQueue");
-		//__vkGetDisplayModePropertiesKHR = (PFN_vkGetDisplayModePropertiesKHR)vkelGetInstanceProcAddr(instance, "vkGetDisplayModePropertiesKHR");
-		//__vkGetDisplayPlaneCapabilitiesKHR = (PFN_vkGetDisplayPlaneCapabilitiesKHR)vkelGetInstanceProcAddr(instance, "vkGetDisplayPlaneCapabilitiesKHR");
-		//__vkGetDisplayPlaneSupportedDisplaysKHR = (PFN_vkGetDisplayPlaneSupportedDisplaysKHR)vkelGetInstanceProcAddr(instance, "vkGetDisplayPlaneSupportedDisplaysKHR");
-		//__vkGetEventStatus = (PFN_vkGetEventStatus)vkelGetInstanceProcAddr(instance, "vkGetEventStatus");
-		//__vkGetFenceStatus = (PFN_vkGetFenceStatus)vkelGetInstanceProcAddr(instance, "vkGetFenceStatus");
-		//__vkGetImageMemoryRequirements = (PFN_vkGetImageMemoryRequirements)vkelGetInstanceProcAddr(instance, "vkGetImageMemoryRequirements");
-		//__vkGetImageSparseMemoryRequirements = (PFN_vkGetImageSparseMemoryRequirements)vkelGetInstanceProcAddr(instance, "vkGetImageSparseMemoryRequirements");
-		//__vkGetImageSubresourceLayout = (PFN_vkGetImageSubresourceLayout)vkelGetInstanceProcAddr(instance, "vkGetImageSubresourceLayout");
-		//__vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)vkelGetInstanceProcAddr(instance, "vkGetInstanceProcAddr");
 		__vkGetPhysicalDeviceDisplayPlanePropertiesKHR = (PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR)vkelGetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR");
 		__vkGetPhysicalDeviceDisplayPropertiesKHR = (PFN_vkGetPhysicalDeviceDisplayPropertiesKHR)vkelGetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPropertiesKHR");
 		__vkGetPhysicalDeviceExternalImageFormatPropertiesNV = (PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV)vkelGetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalImageFormatPropertiesNV");
@@ -798,34 +460,9 @@ extern "C" {
 		__vkGetPhysicalDeviceQueueFamilyProperties = (PFN_vkGetPhysicalDeviceQueueFamilyProperties)vkelGetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyProperties");
 		__vkGetPhysicalDeviceSparseImageFormatProperties = (PFN_vkGetPhysicalDeviceSparseImageFormatProperties)vkelGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSparseImageFormatProperties");
 		__vkGetPhysicalDeviceSurfaceCapabilitiesKHR = (PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR)vkelGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
+		__vkGetPhysicalDeviceSurfaceFormatsKHR = (PFN_vkGetPhysicalDeviceSurfaceFormatsKHR)vkelGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceFormatsKHR");
 		__vkGetPhysicalDeviceSurfacePresentModesKHR = (PFN_vkGetPhysicalDeviceSurfacePresentModesKHR)vkelGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfacePresentModesKHR");
 		__vkGetPhysicalDeviceSurfaceSupportKHR = (PFN_vkGetPhysicalDeviceSurfaceSupportKHR)vkelGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceSupportKHR");
-		//__vkGetPipelineCacheData = (PFN_vkGetPipelineCacheData)vkelGetInstanceProcAddr(instance, "vkGetPipelineCacheData");
-		//__vkGetQueryPoolResults = (PFN_vkGetQueryPoolResults)vkelGetInstanceProcAddr(instance, "vkGetQueryPoolResults");
-		//__vkGetRenderAreaGranularity = (PFN_vkGetRenderAreaGranularity)vkelGetInstanceProcAddr(instance, "vkGetRenderAreaGranularity");
-		//__vkGetSwapchainImagesKHR = (PFN_vkGetSwapchainImagesKHR)vkelGetInstanceProcAddr(instance, "vkGetSwapchainImagesKHR");
-		//__vkInternalAllocationNotification = (PFN_vkInternalAllocationNotification)vkelGetInstanceProcAddr(instance, "vkInternalAllocationNotification");
-		//__vkInternalFreeNotification = (PFN_vkInternalFreeNotification)vkelGetInstanceProcAddr(instance, "vkInternalFreeNotification");
-		//__vkInvalidateMappedMemoryRanges = (PFN_vkInvalidateMappedMemoryRanges)vkelGetInstanceProcAddr(instance, "vkInvalidateMappedMemoryRanges");
-		//__vkMapMemory = (PFN_vkMapMemory)vkelGetInstanceProcAddr(instance, "vkMapMemory");
-		//__vkMergePipelineCaches = (PFN_vkMergePipelineCaches)vkelGetInstanceProcAddr(instance, "vkMergePipelineCaches");
-		//__vkQueueBindSparse = (PFN_vkQueueBindSparse)vkelGetInstanceProcAddr(instance, "vkQueueBindSparse");
-		//__vkQueuePresentKHR = (PFN_vkQueuePresentKHR)vkelGetInstanceProcAddr(instance, "vkQueuePresentKHR");
-		//__vkQueueSubmit = (PFN_vkQueueSubmit)vkelGetInstanceProcAddr(instance, "vkQueueSubmit");
-		//__vkQueueWaitIdle = (PFN_vkQueueWaitIdle)vkelGetInstanceProcAddr(instance, "vkQueueWaitIdle");
-		//__vkReallocationFunction = (PFN_vkReallocationFunction)vkelGetInstanceProcAddr(instance, "vkReallocationFunction");
-		//__vkRegisterObjectsNVX = (PFN_vkRegisterObjectsNVX)vkelGetInstanceProcAddr(instance, "vkRegisterObjectsNVX");
-		//__vkResetCommandBuffer = (PFN_vkResetCommandBuffer)vkelGetInstanceProcAddr(instance, "vkResetCommandBuffer");
-		//__vkResetCommandPool = (PFN_vkResetCommandPool)vkelGetInstanceProcAddr(instance, "vkResetCommandPool");
-		//__vkResetDescriptorPool = (PFN_vkResetDescriptorPool)vkelGetInstanceProcAddr(instance, "vkResetDescriptorPool");
-		//__vkResetEvent = (PFN_vkResetEvent)vkelGetInstanceProcAddr(instance, "vkResetEvent");
-		//__vkResetFences = (PFN_vkResetFences)vkelGetInstanceProcAddr(instance, "vkResetFences");
-		//__vkSetEvent = (PFN_vkSetEvent)vkelGetInstanceProcAddr(instance, "vkSetEvent");
-		//__vkUnmapMemory = (PFN_vkUnmapMemory)vkelGetInstanceProcAddr(instance, "vkUnmapMemory");
-		//__vkUnregisterObjectsNVX = (PFN_vkUnregisterObjectsNVX)vkelGetInstanceProcAddr(instance, "vkUnregisterObjectsNVX");
-		//__vkUpdateDescriptorSets = (PFN_vkUpdateDescriptorSets)vkelGetInstanceProcAddr(instance, "vkUpdateDescriptorSets");
-		//__vkVoidFunction = (PFN_vkVoidFunction)vkelGetInstanceProcAddr(instance, "vkVoidFunction");
-		//__vkWaitForFences = (PFN_vkWaitForFences)vkelGetInstanceProcAddr(instance, "vkWaitForFences");
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
 		__vkCreateAndroidSurfaceKHR = (PFN_vkCreateAndroidSurfaceKHR)vkelGetInstanceProcAddr(instance, "vkCreateAndroidSurfaceKHR");
@@ -864,7 +501,6 @@ extern "C" {
 	{
 		if (!vkelVkLibHandle && !vkelInit())
 			return VK_FALSE;
-
 
 		__vkAcquireNextImageKHR = (PFN_vkAcquireNextImageKHR)vkelGetDeviceProcAddr(device, "vkAcquireNextImageKHR");
 		__vkAllocateCommandBuffers = (PFN_vkAllocateCommandBuffers)vkelGetDeviceProcAddr(device, "vkAllocateCommandBuffers");
@@ -939,8 +575,8 @@ extern "C" {
 		__vkCreateGraphicsPipelines = (PFN_vkCreateGraphicsPipelines)vkelGetDeviceProcAddr(device, "vkCreateGraphicsPipelines");
 		__vkCreateImage = (PFN_vkCreateImage)vkelGetDeviceProcAddr(device, "vkCreateImage");
 		__vkCreateImageView = (PFN_vkCreateImageView)vkelGetDeviceProcAddr(device, "vkCreateImageView");
-		//__vkCreateIndirectCommandsLayoutNVX = (PFN_vkCreateIndirectCommandsLayoutNVX)vkelGetDeviceProcAddr(device, "vkCreateIndirectCommandsLayoutNVX");
-		//__vkCreateObjectTableNVX = (PFN_vkCreateObjectTableNVX)vkelGetDeviceProcAddr(device, "vkCreateObjectTableNVX");
+		__vkCreateIndirectCommandsLayoutNVX = (PFN_vkCreateIndirectCommandsLayoutNVX)vkelGetDeviceProcAddr(device, "vkCreateIndirectCommandsLayoutNVX");
+		__vkCreateObjectTableNVX = (PFN_vkCreateObjectTableNVX)vkelGetDeviceProcAddr(device, "vkCreateObjectTableNVX");
 		__vkCreatePipelineCache = (PFN_vkCreatePipelineCache)vkelGetDeviceProcAddr(device, "vkCreatePipelineCache");
 		__vkCreatePipelineLayout = (PFN_vkCreatePipelineLayout)vkelGetDeviceProcAddr(device, "vkCreatePipelineLayout");
 		__vkCreateQueryPool = (PFN_vkCreateQueryPool)vkelGetDeviceProcAddr(device, "vkCreateQueryPool");
@@ -964,8 +600,8 @@ extern "C" {
 		__vkDestroyFramebuffer = (PFN_vkDestroyFramebuffer)vkelGetDeviceProcAddr(device, "vkDestroyFramebuffer");
 		__vkDestroyImage = (PFN_vkDestroyImage)vkelGetDeviceProcAddr(device, "vkDestroyImage");
 		__vkDestroyImageView = (PFN_vkDestroyImageView)vkelGetDeviceProcAddr(device, "vkDestroyImageView");
-		//__vkDestroyIndirectCommandsLayoutNVX = (PFN_vkDestroyIndirectCommandsLayoutNVX)vkelGetDeviceProcAddr(device, "vkDestroyIndirectCommandsLayoutNVX");
-		//__vkDestroyObjectTableNVX = (PFN_vkDestroyObjectTableNVX)vkelGetDeviceProcAddr(device, "vkDestroyObjectTableNVX");
+		__vkDestroyIndirectCommandsLayoutNVX = (PFN_vkDestroyIndirectCommandsLayoutNVX)vkelGetDeviceProcAddr(device, "vkDestroyIndirectCommandsLayoutNVX");
+		__vkDestroyObjectTableNVX = (PFN_vkDestroyObjectTableNVX)vkelGetDeviceProcAddr(device, "vkDestroyObjectTableNVX");
 		__vkDestroyPipeline = (PFN_vkDestroyPipeline)vkelGetDeviceProcAddr(device, "vkDestroyPipeline");
 		__vkDestroyPipelineCache = (PFN_vkDestroyPipelineCache)vkelGetDeviceProcAddr(device, "vkDestroyPipelineCache");
 		__vkDestroyPipelineLayout = (PFN_vkDestroyPipelineLayout)vkelGetDeviceProcAddr(device, "vkDestroyPipelineLayout");
@@ -1009,7 +645,7 @@ extern "C" {
 		__vkQueueSubmit = (PFN_vkQueueSubmit)vkelGetDeviceProcAddr(device, "vkQueueSubmit");
 		__vkQueueWaitIdle = (PFN_vkQueueWaitIdle)vkelGetDeviceProcAddr(device, "vkQueueWaitIdle");
 		__vkReallocationFunction = (PFN_vkReallocationFunction)vkelGetDeviceProcAddr(device, "vkReallocationFunction");
-		//__vkRegisterObjectsNVX = (PFN_vkRegisterObjectsNVX)vkelGetDeviceProcAddr(device, "vkRegisterObjectsNVX");
+		__vkRegisterObjectsNVX = (PFN_vkRegisterObjectsNVX)vkelGetDeviceProcAddr(device, "vkRegisterObjectsNVX");
 		__vkResetCommandBuffer = (PFN_vkResetCommandBuffer)vkelGetDeviceProcAddr(device, "vkResetCommandBuffer");
 		__vkResetCommandPool = (PFN_vkResetCommandPool)vkelGetDeviceProcAddr(device, "vkResetCommandPool");
 		__vkResetDescriptorPool = (PFN_vkResetDescriptorPool)vkelGetDeviceProcAddr(device, "vkResetDescriptorPool");
@@ -1017,40 +653,10 @@ extern "C" {
 		__vkResetFences = (PFN_vkResetFences)vkelGetDeviceProcAddr(device, "vkResetFences");
 		__vkSetEvent = (PFN_vkSetEvent)vkelGetDeviceProcAddr(device, "vkSetEvent");
 		__vkUnmapMemory = (PFN_vkUnmapMemory)vkelGetDeviceProcAddr(device, "vkUnmapMemory");
-		//__vkUnregisterObjectsNVX = (PFN_vkUnregisterObjectsNVX)vkelGetDeviceProcAddr(device, "vkUnregisterObjectsNVX");
+		__vkUnregisterObjectsNVX = (PFN_vkUnregisterObjectsNVX)vkelGetDeviceProcAddr(device, "vkUnregisterObjectsNVX");
 		__vkUpdateDescriptorSets = (PFN_vkUpdateDescriptorSets)vkelGetDeviceProcAddr(device, "vkUpdateDescriptorSets");
 		__vkVoidFunction = (PFN_vkVoidFunction)vkelGetDeviceProcAddr(device, "vkVoidFunction");
 		__vkWaitForFences = (PFN_vkWaitForFences)vkelGetDeviceProcAddr(device, "vkWaitForFences");
-
-//#ifdef VK_USE_PLATFORM_ANDROID_KHR
-//		__vkCreateAndroidSurfaceKHR = (PFN_vkCreateAndroidSurfaceKHR)vkelGetDeviceProcAddr(device, "vkCreateAndroidSurfaceKHR");
-//#endif /* VK_USE_PLATFORM_ANDROID_KHR */
-//
-//#ifdef VK_USE_PLATFORM_MIR_KHR
-//		__vkCreateMirSurfaceKHR = (PFN_vkCreateMirSurfaceKHR)vkelGetDeviceProcAddr(device, "vkCreateMirSurfaceKHR");
-//		__vkGetPhysicalDeviceMirPresentationSupportKHR = (PFN_vkGetPhysicalDeviceMirPresentationSupportKHR)vkelGetDeviceProcAddr(device, "vkGetPhysicalDeviceMirPresentationSupportKHR");
-//#endif /* VK_USE_PLATFORM_MIR_KHR */
-//
-//#ifdef VK_USE_PLATFORM_WAYLAND_KHR
-//		__vkCreateWaylandSurfaceKHR = (PFN_vkCreateWaylandSurfaceKHR)vkelGetDeviceProcAddr(device, "vkCreateWaylandSurfaceKHR");
-//		__vkGetPhysicalDeviceWaylandPresentationSupportKHR = (PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR)vkelGetDeviceProcAddr(device, "vkGetPhysicalDeviceWaylandPresentationSupportKHR");
-//#endif /* VK_USE_PLATFORM_WAYLAND_KHR */
-//
-//#ifdef VK_USE_PLATFORM_WIN32_KHR
-//		__vkCreateWin32SurfaceKHR = (PFN_vkCreateWin32SurfaceKHR)vkelGetDeviceProcAddr(device, "vkCreateWin32SurfaceKHR");
-//		__vkGetMemoryWin32HandleNV = (PFN_vkGetMemoryWin32HandleNV)vkelGetDeviceProcAddr(device, "vkGetMemoryWin32HandleNV");
-//		__vkGetPhysicalDeviceWin32PresentationSupportKHR = (PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)vkelGetDeviceProcAddr(device, "vkGetPhysicalDeviceWin32PresentationSupportKHR");
-//#endif /* VK_USE_PLATFORM_WIN32_KHR */
-//
-//#ifdef VK_USE_PLATFORM_XCB_KHR
-//		__vkCreateXcbSurfaceKHR = (PFN_vkCreateXcbSurfaceKHR)vkelGetDeviceProcAddr(device, "vkCreateXcbSurfaceKHR");
-//		__vkGetPhysicalDeviceXcbPresentationSupportKHR = (PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)vkelGetDeviceProcAddr(device, "vkGetPhysicalDeviceXcbPresentationSupportKHR");
-//#endif /* VK_USE_PLATFORM_XCB_KHR */
-//
-//#ifdef VK_USE_PLATFORM_XLIB_KHR
-//		__vkCreateXlibSurfaceKHR = (PFN_vkCreateXlibSurfaceKHR)vkelGetDeviceProcAddr(device, "vkCreateXlibSurfaceKHR");
-//		__vkGetPhysicalDeviceXlibPresentationSupportKHR = (PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)vkelGetDeviceProcAddr(device, "vkGetPhysicalDeviceXlibPresentationSupportKHR");
-//#endif /* VK_USE_PLATFORM_XLIB_KHR */
 
 		return VK_TRUE;
 	}
