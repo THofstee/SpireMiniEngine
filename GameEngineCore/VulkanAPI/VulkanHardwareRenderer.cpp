@@ -1,8 +1,7 @@
 #include "../GameEngineCore/HardwareRenderer.h"
 
 #include "vkel.h"
-//#define VK_CPP_NO_EXCEPTIONS
-#include "vk_cpp.hpp"
+#include "vulkan.hpp"
 
 #include "CoreLib/WinForm/Debug.h"
 #include "CoreLib/VectorMath.h"
@@ -207,7 +206,7 @@ namespace VK
 				nullptr // userdata
 			);
 
-			State().callback = State().instance.createDebugReportCallbackEXT(callbackCreateInfo).value;
+			State().callback = State().instance.createDebugReportCallbackEXT(callbackCreateInfo);
 		}
 
 		static void CreateInstance()
@@ -223,7 +222,7 @@ namespace VK
 			CoreLib::List<const char*> enabledInstanceLayers;
 #ifdef _DEBUG
 			bool hasValidationLayer = false;
-			auto supportedLayers = vk::enumerateInstanceLayerProperties().value;
+			auto supportedLayers = vk::enumerateInstanceLayerProperties();
 			for (auto & l : supportedLayers)
 				if (strcmp(l.layerName, "VK_LAYER_LUNARG_standard_validation") == 0)
 				{
@@ -252,7 +251,7 @@ namespace VK
 				.setPpEnabledExtensionNames(enabledInstanceExtensions.Buffer());
 
 			// Create the instance
-			State().instance = vk::createInstance(instInfo).value;
+			State().instance = vk::createInstance(instInfo);
 
 			// Load instance level function pointers
 			vkelInstanceInit((VkInstance)(State().instance));
@@ -263,7 +262,7 @@ namespace VK
 
 		static void SelectPhysicalDevice()
 		{
-			std::vector<vk::PhysicalDevice> physicalDevices = State().instance.enumeratePhysicalDevices().value;
+			std::vector<vk::PhysicalDevice> physicalDevices = State().instance.enumeratePhysicalDevices();
 			DEBUG_ONLY(VkDebug::PrintDeviceInfo(physicalDevices));
 			if (GpuId >= physicalDevices.size())
 				GpuId = 0;
@@ -273,7 +272,7 @@ namespace VK
 
 		static void SelectPhysicalDevice(vk::SurfaceKHR surface)
 		{
-			std::vector<vk::PhysicalDevice> physicalDevices = State().instance.enumeratePhysicalDevices().value;
+			std::vector<vk::PhysicalDevice> physicalDevices = State().instance.enumeratePhysicalDevices();
 			DEBUG_ONLY(VkDebug::PrintDeviceInfo(physicalDevices));
 
 			int k = 0;
@@ -281,7 +280,7 @@ namespace VK
 			{
 				for (size_t i = 0; i < physDevice.getQueueFamilyProperties().size(); i++)
 				{
-					if (physDevice.getSurfaceSupportKHR((uint32_t)i, surface).value)
+					if (physDevice.getSurfaceSupportKHR((uint32_t)i, surface))
 					{
 						State().physicalDevice = physDevice;
 						GpuId = k;
@@ -332,7 +331,7 @@ namespace VK
 			// Lambda to check if layer is present and then add it
 			auto AddLayer = [](CoreLib::List<const char*>& enabledDeviceLayers, const char* layerName)
 			{
-				for (auto layer : State().physicalDevice.enumerateDeviceLayerProperties().value)
+				for (auto layer : State().physicalDevice.enumerateDeviceLayerProperties())
 				{
 					if (!strcmp(layerName, layer.layerName))
 					{
@@ -349,7 +348,7 @@ namespace VK
 			// Lambda to check if extension is present and then add it
 			auto AddExtension = [](CoreLib::List<const char*>& enabledDeviceExtensions, const char* extensionName)
 			{
-				for (auto extension : State().physicalDevice.enumerateDeviceExtensionProperties().value)
+				for (auto extension : State().physicalDevice.enumerateDeviceExtensionProperties())
 				{
 					if (!strcmp(extensionName, extension.extensionName))
 					{
@@ -376,10 +375,10 @@ namespace VK
 				.setPpEnabledExtensionNames(enabledDeviceExtensions.Buffer())
 				.setPEnabledFeatures(&enabledDeviceFeatures);
 
-			State().device = State().physicalDevice.createDevice(deviceInfo).value;
+			State().device = State().physicalDevice.createDevice(deviceInfo);
 
 			// Load device level function pointers
-			vkelDeviceInit((VkDevice)(State().device));
+			vkelDeviceInit((VkPhysicalDevice)(State().physicalDevice), (VkDevice)(State().device));
 
 			State().renderQueue = State().device.getQueue(renderQueueFamilyIndex, 0);
 			State().transferQueue = State().device.getQueue(transferQueueFamilyIndex, renderQueuePriorities.Count() - 1);//TODO: Change the index if changing family
@@ -391,20 +390,20 @@ namespace VK
 				.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
 				.setQueueFamilyIndex(State().renderQueueIndex);
 
-			State().swapchainCommandPool = State().device.createCommandPool(commandPoolCreateInfo).value;
+			State().swapchainCommandPool = State().device.createCommandPool(commandPoolCreateInfo);
 
 			vk::CommandPoolCreateInfo setupCommandPoolCreateInfo = vk::CommandPoolCreateInfo()
 				.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
 				.setQueueFamilyIndex(State().transferQueueIndex);
 
-			State().transferCommandPool = State().device.createCommandPool(setupCommandPoolCreateInfo).value;
+			State().transferCommandPool = State().device.createCommandPool(setupCommandPoolCreateInfo);
 
 			//TODO: multiple pools for multiple threads
 			vk::CommandPoolCreateInfo renderCommandPoolCreateInfo = vk::CommandPoolCreateInfo()
 				.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer)
 				.setQueueFamilyIndex(State().renderQueueIndex);
 
-			State().renderCommandPool = State().device.createCommandPool(renderCommandPoolCreateInfo).value;
+			State().renderCommandPool = State().device.createCommandPool(renderCommandPoolCreateInfo);
 
 			// Create primary command buffers
 			State().primaryFences = new CoreLib::List<vk::Fence>();
@@ -413,7 +412,7 @@ namespace VK
 			for (int k = 0; k < numCommandBuffers; k++)
 			{
 				// Initially all fences are signaled
-				State().primaryFences->Add(Device().createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled)).value);
+				State().primaryFences->Add(Device().createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled)));
 				State().primaryBuffers->Add(CreateCommandBuffer(RenderCommandPool()));
 			}
 		}
@@ -595,16 +594,8 @@ namespace VK
 				.setDescriptorSetCount(layouts.Count())
 				.setPSetLayouts(layouts.Buffer());
 
-			vk::ResultValue<std::vector<vk::DescriptorSet>> descriptorSets = RendererState::Device().allocateDescriptorSets(descriptorSetAllocateInfo);
-			vk::Result err = descriptorSets.result;
-			res.second = descriptorSets.value[0];
-
-			// As of 1.0.25, assume that any error effectively means failure due to fragmented pool
-			if (err != vk::Result::eSuccess)
-			{
-				State().descriptorPoolChain->Add(new DescriptorPoolObject());
-				return AllocateDescriptorSet(layouts);
-			}
+			std::vector<vk::DescriptorSet> descriptorSets = RendererState::Device().allocateDescriptorSets(descriptorSetAllocateInfo);
+			res.second = descriptorSets[0];
 
 			//TODO: add counter mechanism to DescriptorPoolObject so we know when to destruct
 
@@ -644,19 +635,19 @@ namespace VK
 				.setHwnd((HWND)windowHandle)
 				.setHinstance(GetModuleHandle(NULL));
 
-			surface = State().instance.createWin32SurfaceKHR(surfaceCreateInfo).value;
+			surface = State().instance.createWin32SurfaceKHR(surfaceCreateInfo);
 #elif __ANDROID__
 			vk::AndroidSurfaceCreateInfoKHR surfaceCreateInfo = vk::AndroidSurfaceCreaetInfoKHR()
 				.setWindow((ANativeWindow*)window);
 
-			surface = isntance.createAndroidSurfaceKHR(surfaceCreateInfo).value;
+			surface = isntance.createAndroidSurfaceKHR(surfaceCreateInfo);
 #endif
 
 			// Check to see if the current physical device supports the surface
 			bool supported = false;
 			for (unsigned int i = 0; i < State().physicalDevice.getQueueFamilyProperties().size(); i++)
 			{
-				if (State().physicalDevice.getSurfaceSupportKHR(i, surface).value)
+				if (State().physicalDevice.getSurfaceSupportKHR(i, surface))
 				{
 					supported = true;
 					break;
@@ -687,7 +678,7 @@ namespace VK
 			vk::CommandBuffer commandBuffer;
 
 			//TODO: lock mutex on commandPool or allocate commandPool per thread
-			commandBuffer = State().device.allocateCommandBuffers(commandBufferAllocateInfo).value.front();
+			commandBuffer = State().device.allocateCommandBuffers(commandBufferAllocateInfo).front();
 			//TODO: unlock mutex on commandPool
 
 			return commandBuffer;
@@ -714,7 +705,7 @@ namespace VK
 			.setPoolSizeCount(poolSizes.Count())
 			.setPPoolSizes(poolSizes.Buffer());
 
-		pool = RendererState::Device().createDescriptorPool(poolCreateInfo).value;
+		pool = RendererState::Device().createDescriptorPool(poolCreateInfo);
 	}
 	DescriptorPoolObject::~DescriptorPoolObject()
 	{
@@ -755,7 +746,7 @@ namespace VK
 		case StorageFormat::RGB10_A2: return vk::Format::eA2R10G10B10UnormPack32;//
 		case StorageFormat::Depth32: return vk::Format::eD32Sfloat;
 		case StorageFormat::Depth24Stencil8: return vk::Format::eD24UnormS8Uint;
-		default: throw CoreLib::NotImplementedException();
+		default: throw CoreLib::NotImplementedException("TranslateStorageFormat");
 		}
 	};
 
@@ -767,7 +758,7 @@ namespace VK
 		case BufferUsage::IndexBuffer: return vk::BufferUsageFlagBits::eIndexBuffer;
 		case BufferUsage::StorageBuffer: return vk::BufferUsageFlagBits::eStorageBuffer;
 		case BufferUsage::UniformBuffer: return vk::BufferUsageFlagBits::eUniformBuffer;
-		default: throw CoreLib::NotImplementedException();
+		default: throw CoreLib::NotImplementedException("TranslateUsageFlags");
 		}
 	}
 
@@ -844,11 +835,12 @@ namespace VK
 	{
 		switch (bindType)
 		{
-		case BindingType::Texture: return vk::DescriptorType::eCombinedImageSampler;
+		case BindingType::Texture: return vk::DescriptorType::eSampledImage;
+		case BindingType::Sampler: return vk::DescriptorType::eSampler;
 		case BindingType::UniformBuffer: return vk::DescriptorType::eUniformBuffer; //TODO: dynamic?
 		case BindingType::StorageBuffer: return vk::DescriptorType::eStorageBuffer; //TODO: ^
 		case BindingType::Unused: throw HardwareRendererException("Attempting to use unused binding");
-		default: throw CoreLib::NotImplementedException();
+		default: throw CoreLib::NotImplementedException("TranslateBindingType");
 		}
 	}
 
@@ -864,7 +856,7 @@ namespace VK
 		case TextureUsage::SampledDepthAttachment:
 			return vk::ImageLayout::eDepthStencilAttachmentOptimal;
 		case TextureUsage::Sampled: return vk::ImageLayout::eShaderReadOnlyOptimal;
-		default: throw CoreLib::NotImplementedException();
+		default: throw CoreLib::NotImplementedException("LayoutFromUsage");
 		}
 	}
 
@@ -881,7 +873,7 @@ namespace VK
 		case CompareFunc::NotEqual: return vk::CompareOp::eNotEqual;
 		case CompareFunc::Always: return vk::CompareOp::eAlways;
 		case CompareFunc::Never: return vk::CompareOp::eNever;
-		default: throw CoreLib::NotImplementedException();
+		default: throw CoreLib::NotImplementedException("TranslateCompareFunc");
 		}
 	}
 
@@ -897,7 +889,21 @@ namespace VK
 		case StencilOp::Decrement: return vk::StencilOp::eDecrementAndClamp;
 		case StencilOp::DecrementWrap: return vk::StencilOp::eDecrementAndWrap;
 		case StencilOp::Invert: return vk::StencilOp::eInvert;
-		default: throw CoreLib::NotImplementedException();
+		default: throw CoreLib::NotImplementedException("TranslateStencilOp");
+		}
+	}
+
+	vk::PrimitiveTopology TranslatePrimitiveTopology(PrimitiveType ptype)
+	{
+		switch (ptype)
+		{
+		case PrimitiveType::Triangles: return vk::PrimitiveTopology::eTriangleList;
+		case PrimitiveType::TriangleFans: return vk::PrimitiveTopology::eTriangleFan;
+		case PrimitiveType::Points: return vk::PrimitiveTopology::ePointList;
+		case PrimitiveType::Lines: return vk::PrimitiveTopology::eLineList;
+		case PrimitiveType::TriangleStrips: return vk::PrimitiveTopology::eTriangleStrip;
+		case PrimitiveType::LineStrips: return vk::PrimitiveTopology::eLineStrip;
+		default: throw CoreLib::NotImplementedException("TranslatePrimitiveTopology");
 		}
 	}
 
@@ -942,8 +948,8 @@ namespace VK
 			return vk::AccessFlagBits::eHostWrite;
 		case vk::ImageLayout::ePresentSrcKHR:
 			return vk::AccessFlags();
-		default: // This is not a valid image layout
-			exit(-1);
+		default:
+			throw HardwareRendererException("Invalid ImageLayout");
 		}
 	}
 
@@ -981,7 +987,7 @@ namespace VK
 		case ShaderType::VertexShader: return vk::ShaderStageFlagBits::eVertex;
 		case ShaderType::FragmentShader: return vk::ShaderStageFlagBits::eFragment;
 		case ShaderType::ComputeShader: return vk::ShaderStageFlagBits::eCompute;
-		default: throw CoreLib::NotImplementedException();
+		default: throw CoreLib::NotImplementedException("ShaderStageFlagBits");
 		}
 	}
 
@@ -1039,7 +1045,7 @@ namespace VK
 				.setPQueueFamilyIndices(nullptr)
 				.setInitialLayout(vk::ImageLayout::eUndefined);
 
-			image = RendererState::Device().createImage(imageCreateInfo).value;
+			image = RendererState::Device().createImage(imageCreateInfo);
 
 			vk::MemoryRequirements imageMemoryRequirements = RendererState::Device().getImageMemoryRequirements(image);
 
@@ -1047,7 +1053,7 @@ namespace VK
 				.setAllocationSize(imageMemoryRequirements.size)
 				.setMemoryTypeIndex(GetMemoryType(imageMemoryRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal));
 
-			memory = RendererState::Device().allocateMemory(imageAllocateInfo).value;
+			memory = RendererState::Device().allocateMemory(imageAllocateInfo);
 			RendererState::Device().bindImageMemory(image, memory, 0);
 
 			vk::ImageSubresourceRange imageSubresourceRange = vk::ImageSubresourceRange()
@@ -1065,7 +1071,7 @@ namespace VK
 				.setComponents(vk::ComponentMapping(vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG, vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA))//
 				.setSubresourceRange(imageSubresourceRange);
 
-			view = RendererState::Device().createImageView(imageViewCreateInfo).value;
+			view = RendererState::Device().createImageView(imageViewCreateInfo);
 		}
 		~Texture()
 		{
@@ -1208,7 +1214,7 @@ namespace VK
 						.setPQueueFamilyIndices(nullptr)
 						.setInitialLayout(vk::ImageLayout::ePreinitialized);
 
-					vk::Image stagingImage = RendererState::Device().createImage(stagingImageCreateInfo).value;
+					vk::Image stagingImage = RendererState::Device().createImage(stagingImageCreateInfo);
 
 					vk::MemoryRequirements stagingImageMemoryRequirements = RendererState::Device().getImageMemoryRequirements(image);
 
@@ -1216,7 +1222,7 @@ namespace VK
 						.setAllocationSize(stagingImageMemoryRequirements.size)
 						.setMemoryTypeIndex(GetMemoryType(stagingImageMemoryRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible));
 
-					vk::DeviceMemory stagingMemory = RendererState::Device().allocateMemory(imageAllocateInfo).value;
+					vk::DeviceMemory stagingMemory = RendererState::Device().allocateMemory(imageAllocateInfo);
 
 					RendererState::Device().bindImageMemory(stagingImage, stagingMemory, 0);
 
@@ -1228,7 +1234,7 @@ namespace VK
 					vk::SubresourceLayout stagingSubresourceLayout = RendererState::Device().getImageSubresourceLayout(stagingImage, stagingImageSubresource);
 
 					// Copy data to staging image
-					void* stagingMappedMemory = RendererState::Device().mapMemory(stagingMemory, 0, VK_WHOLE_SIZE, vk::MemoryMapFlags()).value;
+					void* stagingMappedMemory = RendererState::Device().mapMemory(stagingMemory, 0, VK_WHOLE_SIZE, vk::MemoryMapFlags());
 
 					if (format == StorageFormat::BC1 || format == StorageFormat::BC5)
 					{
@@ -1355,7 +1361,7 @@ namespace VK
 						.setQueueFamilyIndexCount(0)
 						.setPQueueFamilyIndices(nullptr);
 
-					vk::Buffer stagingBuffer = RendererState::Device().createBuffer(stagingBufferCreateInfo).value;
+					vk::Buffer stagingBuffer = RendererState::Device().createBuffer(stagingBufferCreateInfo);
 
 					vk::MemoryRequirements stagingBufferMemoryRequirements = RendererState::Device().getBufferMemoryRequirements(stagingBuffer);
 
@@ -1363,11 +1369,11 @@ namespace VK
 						.setAllocationSize(stagingBufferMemoryRequirements.size)
 						.setMemoryTypeIndex(GetMemoryType(stagingBufferMemoryRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible));
 
-					vk::DeviceMemory stagingMemory = RendererState::Device().allocateMemory(bufferAllocateInfo).value;
+					vk::DeviceMemory stagingMemory = RendererState::Device().allocateMemory(bufferAllocateInfo);
 
 					RendererState::Device().bindBufferMemory(stagingBuffer, stagingMemory, 0);
 
-					void* stagingMappedMemory = RendererState::Device().mapMemory(stagingMemory, 0, VK_WHOLE_SIZE, vk::MemoryMapFlags()).value;
+					void* stagingMappedMemory = RendererState::Device().mapMemory(stagingMemory, 0, VK_WHOLE_SIZE, vk::MemoryMapFlags());
 					memcpy(stagingMappedMemory, data, bufferSize);
 
 					//TODO: flush?
@@ -1500,7 +1506,7 @@ namespace VK
 					.setPQueueFamilyIndices(nullptr)
 					.setInitialLayout(vk::ImageLayout::eUndefined);
 
-				image = RendererState::Device().createImage(imageCreateInfo).value;
+				image = RendererState::Device().createImage(imageCreateInfo);
 
 				vk::MemoryRequirements imageMemoryRequirements = RendererState::Device().getImageMemoryRequirements(image);
 
@@ -1508,7 +1514,7 @@ namespace VK
 					.setAllocationSize(imageMemoryRequirements.size)
 					.setMemoryTypeIndex(GetMemoryType(imageMemoryRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal));
 
-				memory = RendererState::Device().allocateMemory(imageAllocateInfo).value;
+				memory = RendererState::Device().allocateMemory(imageAllocateInfo);
 
 				RendererState::Device().bindImageMemory(image, memory, 0);
 
@@ -1527,7 +1533,7 @@ namespace VK
 					.setComponents(vk::ComponentMapping(vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG, vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA))//
 					.setSubresourceRange(imageSubresourceRange);
 
-				view = RendererState::Device().createImageView(imageViewCreateInfo).value;
+				view = RendererState::Device().createImageView(imageViewCreateInfo);
 
 				// Create blit copy regions
 				CoreLib::List<vk::ImageBlit> stagingBlitRegions;
@@ -1755,7 +1761,7 @@ namespace VK
 				.setQueueFamilyIndexCount(0)
 				.setPQueueFamilyIndices(nullptr);
 
-			vk::Buffer stagingBuffer = RendererState::Device().createBuffer(stagingBufferCreateInfo).value;
+			vk::Buffer stagingBuffer = RendererState::Device().createBuffer(stagingBufferCreateInfo);
 
 			vk::MemoryRequirements stagingBufferMemoryRequirements = RendererState::Device().getBufferMemoryRequirements(stagingBuffer);
 
@@ -1763,7 +1769,7 @@ namespace VK
 				.setAllocationSize(stagingBufferMemoryRequirements.size)
 				.setMemoryTypeIndex(GetMemoryType(stagingBufferMemoryRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible));
 
-			vk::DeviceMemory stagingMemory = RendererState::Device().allocateMemory(bufferAllocateInfo).value;
+			vk::DeviceMemory stagingMemory = RendererState::Device().allocateMemory(bufferAllocateInfo);
 
 			RendererState::Device().bindBufferMemory(stagingBuffer, stagingMemory, 0);
 
@@ -1867,7 +1873,7 @@ namespace VK
 
 			// Map memory and copy
 			assert(bufSize >= bufferSize);
-			float* stagingMappedMemory = (float*)RendererState::Device().mapMemory(stagingMemory, 0, bufferSize, vk::MemoryMapFlags()).value;
+			float* stagingMappedMemory = (float*)RendererState::Device().mapMemory(stagingMemory, 0, bufferSize, vk::MemoryMapFlags());
 			memcpy(data, stagingMappedMemory, bufferSize);
 			RendererState::Device().unmapMemory(stagingMemory);
 
@@ -1999,7 +2005,7 @@ namespace VK
 				break;
 			}
 
-			sampler = RendererState::Device().createSampler(samplerCreateInfo).value;
+			sampler = RendererState::Device().createSampler(samplerCreateInfo);
 		}
 		void DestroySampler()
 		{
@@ -2106,7 +2112,7 @@ namespace VK
 				.setQueueFamilyIndexCount(0)
 				.setPQueueFamilyIndices(nullptr);
 
-			this->buffer = RendererState::Device().createBuffer(bufferCreateInfo).value;
+			this->buffer = RendererState::Device().createBuffer(bufferCreateInfo);
 
 			vk::MemoryRequirements memoryRequirements = RendererState::Device().getBufferMemoryRequirements(this->buffer);
 			this->backingSize = (int)memoryRequirements.size;
@@ -2122,7 +2128,7 @@ namespace VK
 				.setPQueueFamilyIndices(nullptr);
 
 			RendererState::Device().destroyBuffer(this->buffer);
-			this->buffer = RendererState::Device().createBuffer(fullsizeBufferCreateInfo).value;
+			this->buffer = RendererState::Device().createBuffer(fullsizeBufferCreateInfo);
 
 			vk::MemoryRequirements fullsizeMemoryRequirements = RendererState::Device().getBufferMemoryRequirements(this->buffer);
 
@@ -2130,7 +2136,7 @@ namespace VK
 				.setAllocationSize(fullsizeMemoryRequirements.size)
 				.setMemoryTypeIndex(GetMemoryType(fullsizeMemoryRequirements.memoryTypeBits, location));
 
-			this->memory = RendererState::Device().allocateMemory(fullsizeMemoryAllocateInfo).value;
+			this->memory = RendererState::Device().allocateMemory(fullsizeMemoryAllocateInfo);
 			RendererState::Device().bindBufferMemory(this->buffer, this->memory, 0);
 		}
 		void DestroyBuffer()
@@ -2204,7 +2210,7 @@ namespace VK
 						.setQueueFamilyIndexCount(0)
 						.setPQueueFamilyIndices(nullptr);
 
-					vk::Buffer stagingBuffer = RendererState::Device().createBuffer(stagingCreateInfo).value;
+					vk::Buffer stagingBuffer = RendererState::Device().createBuffer(stagingCreateInfo);
 
 					vk::MemoryRequirements stagingMemoryRequirements = RendererState::Device().getBufferMemoryRequirements(stagingBuffer);
 
@@ -2212,11 +2218,11 @@ namespace VK
 						.setAllocationSize(stagingMemoryRequirements.size)
 						.setMemoryTypeIndex(GetMemoryType(stagingMemoryRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible));
 
-					vk::DeviceMemory stagingMemory = RendererState::Device().allocateMemory(stagingMemoryAllocateInfo).value;
+					vk::DeviceMemory stagingMemory = RendererState::Device().allocateMemory(stagingMemoryAllocateInfo);
 					RendererState::Device().bindBufferMemory(stagingBuffer, stagingMemory, 0);
 
 					// Copy data to staging buffer
-					void* stagingMappedMemory = RendererState::Device().mapMemory(stagingMemory, 0, VK_WHOLE_SIZE, vk::MemoryMapFlags()).value;
+					void* stagingMappedMemory = RendererState::Device().mapMemory(stagingMemory, 0, VK_WHOLE_SIZE, vk::MemoryMapFlags());
 					memcpy(stagingMappedMemory, data, psize);
 					RendererState::Device().unmapMemory(stagingMemory);
 
@@ -2352,7 +2358,7 @@ namespace VK
 			this->mapOffset = offset;
 			this->mapSize = psize;
 
-			return RendererState::Device().mapMemory(memory, offset, psize, vk::MemoryMapFlags()).value;
+			return RendererState::Device().mapMemory(memory, offset, psize, vk::MemoryMapFlags());
 		}
 		void* Map()
 		{
@@ -2421,7 +2427,7 @@ namespace VK
 				.setCodeSize(size)
 				.setPCode((uint32_t*)data);
 
-			this->module = RendererState::Device().createShaderModule(shaderModuleCreateInfo).value;
+			this->module = RendererState::Device().createShaderModule(shaderModuleCreateInfo);
 		}
 
 		void Destroy()
@@ -2455,7 +2461,7 @@ namespace VK
 		case LoadOp::Load: return vk::AttachmentLoadOp::eLoad;
 		case LoadOp::Clear: return vk::AttachmentLoadOp::eClear;
 		case LoadOp::DontCare: return vk::AttachmentLoadOp::eDontCare;
-		default: throw CoreLib::NotImplementedException();
+		default: throw CoreLib::NotImplementedException("TranslateLoadOp");
 		}
 	}
 
@@ -2465,7 +2471,7 @@ namespace VK
 		{
 		case StoreOp::Store: return vk::AttachmentStoreOp::eStore;
 		case StoreOp::DontCare: return vk::AttachmentStoreOp::eDontCare;
-		default: throw CoreLib::NotImplementedException();
+		default: throw CoreLib::NotImplementedException("TranslateStoreOp");
 		}
 	}
 
@@ -2586,7 +2592,7 @@ namespace VK
 				.setDependencyCount(0)
 				.setPDependencies(nullptr);
 
-			this->renderPass = RendererState::Device().createRenderPass(renderPassCreateInfo).value;
+			this->renderPass = RendererState::Device().createRenderPass(renderPassCreateInfo);
 		}
 		~RenderTargetLayout()
 		{
@@ -2604,7 +2610,6 @@ namespace VK
 					usage = dynamic_cast<Texture2D*>(renderAttachments.attachments[colorReference.attachment].handle.tex2D)->usage;
 				else if (renderAttachments.attachments[colorReference.attachment].handle.tex2DArray)
 				{
-					//throw CoreLib::NotImplementedException();
 					usage = dynamic_cast<Texture2DArray*>(renderAttachments.attachments[colorReference.attachment].handle.tex2DArray)->usage;
 				}
 
@@ -2618,7 +2623,6 @@ namespace VK
 					usage = dynamic_cast<Texture2D*>(renderAttachments.attachments[depthReference.attachment].handle.tex2D)->usage;
 				else if (renderAttachments.attachments[depthReference.attachment].handle.tex2DArray)
 				{
-					//throw CoreLib::NotImplementedException();
 					usage = dynamic_cast<Texture2DArray*>(renderAttachments.attachments[depthReference.attachment].handle.tex2DArray)->usage;
 				}
 				if (!(usage & TextureUsage::DepthAttachment))
@@ -2631,8 +2635,6 @@ namespace VK
 			CoreLib::List<vk::ImageView> framebufferAttachmentViews;
 			for (auto attachment : renderAttachments.attachments)
 			{
-				//if (attachment.handle.tex2DArray)
-				//throw CoreLib::NotImplementedException();
 				if (attachment.handle.tex2D)
 					framebufferAttachmentViews.Add(dynamic_cast<Texture2D*>(attachment.handle.tex2D)->view);
 				else if (attachment.handle.tex2DArray)
@@ -2648,7 +2650,7 @@ namespace VK
 				.setHeight(renderAttachments.height)
 				.setLayers(1);
 
-			result->framebuffer = RendererState::Device().createFramebuffer(framebufferCreateInfo).value;
+			result->framebuffer = RendererState::Device().createFramebuffer(framebufferCreateInfo);
 			result->width = renderAttachments.width;
 			result->height = renderAttachments.height;
 
@@ -2920,8 +2922,6 @@ namespace VK
 		}
 		virtual void SetBindingLayout(CoreLib::ArrayView<GameEngine::DescriptorSetLayout*> descriptorSets) override
 		{
-			//if (bindType == BindingType::Unused) return;//TODO: Should do something else?
-
 			//layoutBindings.Add(
 			//	vk::DescriptorSetLayoutBinding()
 			//	.setBinding(bindingId)
@@ -2933,27 +2933,13 @@ namespace VK
 		}
 		virtual void SetDebugName(CoreLib::String name)
 		{
-			throw CoreLib::NotImplementedException();
+			throw CoreLib::NotImplementedException("SetDebugName");
 		}
 		virtual Pipeline* ToPipeline(GameEngine::RenderTargetLayout* renderTargetLayout) override
 		{
 			return new Pipeline(dynamic_cast<RenderTargetLayout*>(renderTargetLayout), this);
 		}
 	};
-
-	vk::PrimitiveTopology TranslatePrimitiveTopology(PrimitiveType ptype)
-	{
-		switch (ptype)
-		{
-		case PrimitiveType::Triangles: return vk::PrimitiveTopology::eTriangleList;
-		case PrimitiveType::TriangleFans: return vk::PrimitiveTopology::eTriangleFan;
-		case PrimitiveType::Points: return vk::PrimitiveTopology::ePointList;
-		case PrimitiveType::Lines: return vk::PrimitiveTopology::eLineList;
-		case PrimitiveType::TriangleStrips: return vk::PrimitiveTopology::eTriangleStrip;
-		case PrimitiveType::LineStrips: return vk::PrimitiveTopology::eLineStrip;
-		default: throw CoreLib::NotImplementedException();
-		}
-	}
 
 	Pipeline::Pipeline(RenderTargetLayout* renderTargetLayout, PipelineBuilder* pipelineBuilder)
 	{
@@ -2963,7 +2949,7 @@ namespace VK
 			.setBindingCount(pipelineBuilder->layoutBindings.Count())
 			.setPBindings(pipelineBuilder->layoutBindings.Buffer());
 
-		this->descriptorSetLayouts.Add(RendererState::Device().createDescriptorSetLayout(descriptorSetLayoutCreateInfo).value);
+		this->descriptorSetLayouts.Add(RendererState::Device().createDescriptorSetLayout(descriptorSetLayoutCreateInfo));
 
 		for (auto setLayout : pipelineBuilder->layoutBindings)
 			this->descriptorPoolSizes.Add(vk::DescriptorPoolSize(setLayout.descriptorType, setLayout.descriptorCount));
@@ -2976,7 +2962,7 @@ namespace VK
 			.setPushConstantRangeCount(pipelineBuilder->pushConstantRanges.Count())
 			.setPPushConstantRanges(pipelineBuilder->pushConstantRanges.Buffer());
 
-		this->pipelineLayout = RendererState::Device().createPipelineLayout(layoutCreateInfo).value;
+		this->pipelineLayout = RendererState::Device().createPipelineLayout(layoutCreateInfo);
 
 		// Vertex Input Description
 		vk::PipelineVertexInputStateCreateInfo vertexInputCreateInfo = vk::PipelineVertexInputStateCreateInfo()
@@ -3107,7 +3093,7 @@ namespace VK
 			.setBasePipelineHandle(vk::Pipeline())
 			.setBasePipelineIndex(-1);
 
-		this->pipeline = RendererState::Device().createGraphicsPipelines(vk::PipelineCache(), pipelineCreateInfo).value[0];
+		this->pipeline = RendererState::Device().createGraphicsPipelines(vk::PipelineCache(), pipelineCreateInfo)[0];
 	}
 
 	//PipelineInstance::PipelineInstance(Pipeline* pipeline, const PipelineBinding& pipelineBinding) :
@@ -3226,7 +3212,7 @@ namespace VK
 
 		TestEvent()
 		{
-			internalEvent = RendererState::Device().createEvent(vk::EventCreateInfo()).value;
+			internalEvent = RendererState::Device().createEvent(vk::EventCreateInfo());
 		}
 		~TestEvent()
 		{
@@ -3253,7 +3239,7 @@ namespace VK
 			submitEvent = new TestEvent;
 			RendererState::Device().setEvent(submitEvent->internalEvent);
 #else
-			submitEvent = RendererState::Device().createEvent(vk::EventCreateInfo()).value;
+			submitEvent = RendererState::Device().createEvent(vk::EventCreateInfo());
 			RendererState::Device().setEvent(submitEvent);
 #endif
 		}
@@ -3551,7 +3537,7 @@ namespace VK
 
 		void CreateSwapchain()
 		{
-			std::vector<vk::SurfaceFormatKHR> surfaceFormats = RendererState::PhysicalDevice().getSurfaceFormatsKHR(surface).value;
+			std::vector<vk::SurfaceFormatKHR> surfaceFormats = RendererState::PhysicalDevice().getSurfaceFormatsKHR(surface);
 			vk::Format format;
 			vk::ColorSpaceKHR colorSpace = surfaceFormats.at(0).colorSpace;
 			if ((surfaceFormats.size() == 1) && (surfaceFormats.at(0).format == vk::Format::eUndefined))
@@ -3561,7 +3547,7 @@ namespace VK
 
 			// Select presentation mode
 			vk::PresentModeKHR presentMode = vk::PresentModeKHR::eFifo; // Fifo presentation mode is guaranteed
-			for (auto & mode : RendererState::PhysicalDevice().getSurfacePresentModesKHR(surface).value)
+			for (auto & mode : RendererState::PhysicalDevice().getSurfacePresentModesKHR(surface))
 			{
 				// If we can use mailbox, use it.
 				if (mode == vk::PresentModeKHR::eMailbox)
@@ -3571,7 +3557,7 @@ namespace VK
 				}
 			}
 
-			vk::SurfaceCapabilitiesKHR surfaceCapabilities = RendererState::PhysicalDevice().getSurfaceCapabilitiesKHR(surface).value;
+			vk::SurfaceCapabilitiesKHR surfaceCapabilities = RendererState::PhysicalDevice().getSurfaceCapabilitiesKHR(surface);
 
 			unsigned int desiredSwapchainImages = 3;
 			if (desiredSwapchainImages < surfaceCapabilities.minImageCount) {
@@ -3617,7 +3603,7 @@ namespace VK
 				.setClipped(VK_TRUE)
 				.setOldSwapchain(oldSwapchain);
 
-			swapchain = RendererState::Device().createSwapchainKHR(swapchainCreateInfo).value;
+			swapchain = RendererState::Device().createSwapchainKHR(swapchainCreateInfo);
 			DestroySwapchain(oldSwapchain);
 
 			unsigned int swapchainImageCount = 0;
@@ -3652,8 +3638,8 @@ namespace VK
 			DestroySemaphores();
 
 			vk::SemaphoreCreateInfo semaphoreCreateInfo;
-			imageAvailableSemaphore = RendererState::Device().createSemaphore(semaphoreCreateInfo).value;
-			renderingFinishedSemaphore = RendererState::Device().createSemaphore(semaphoreCreateInfo).value;
+			imageAvailableSemaphore = RendererState::Device().createSemaphore(semaphoreCreateInfo);
+			renderingFinishedSemaphore = RendererState::Device().createSemaphore(semaphoreCreateInfo);
 		}
 
 		void DestroySemaphores()
@@ -4058,7 +4044,7 @@ namespace VK
 		}
 		virtual void Present(GameEngine::Texture2D* srcImage) override
 		{
-			auto nextImage = RendererState::Device().acquireNextImageKHR(swapchain, UINT64_MAX, imageAvailableSemaphore, vk::Fence()).value;
+			uint32_t nextImage = RendererState::Device().acquireNextImageKHR(swapchain, UINT64_MAX, imageAvailableSemaphore, vk::Fence()).value;
 
 			//TODO: see if following line is beneficial
 			commandBuffers[nextImage].reset(vk::CommandBufferResetFlags()); // implicitly done by begin
@@ -4281,17 +4267,17 @@ namespace VK
 
 		virtual DescriptorSetLayout* CreateDescriptorSetLayout(CoreLib::ArrayView<DescriptorLayout> descriptors) override
 		{
-			throw CoreLib::NotImplementedException();
+			return new DescriptorSetLayout(descriptors);
 		}
 
 		virtual DescriptorSet * CreateDescriptorSet(GameEngine::DescriptorSetLayout* layout) override
 		{
-			throw CoreLib::NotImplementedException();
+			throw CoreLib::NotImplementedException("CreateDescriptorSet");
 		}
 
 		virtual int GetDescriptorPoolCount() override
 		{
-			throw CoreLib::NotImplementedException();
+			throw CoreLib::NotImplementedException("GetDescriptorPoolCount");
 		}
 
 		CommandBuffer* CreateCommandBuffer()
