@@ -885,8 +885,6 @@ namespace VK
 		}
 	}
 
-
-
 	vk::StencilOp TranslateStencilOp(StencilOp stencilOp)
 	{
 		switch (stencilOp)
@@ -2644,6 +2642,42 @@ namespace VK
 		}
 	};
 
+	class DescriptorSetLayout : public GameEngine::DescriptorSetLayout
+	{
+	protected:
+		DescriptorSetLayout() {}
+	};
+
+	class DescriptorSet : public GameEngine::DescriptorSet
+	{
+	public:
+		CoreLib::List<vk::WriteDescriptorSet> writeDescriptorSets;
+		vk::DescriptorSet descriptorSet;
+	public:
+		virtual void BeginUpdate() override
+		{
+			writeDescriptorSets.Clear();
+		}
+
+		virtual void Update(int location, GameEngine::Texture* texture) override
+		{
+		}
+
+		virtual void Update(int location, GameEngine::TextureSampler* sampler) override
+		{
+		}
+
+		virtual void Update(int location, GameEngine::Buffer* buffer, int offset = 0, int length = -1) override
+		{
+		}
+
+		virtual void EndUpdate() override
+		{
+			if (writeDescriptorSets.Count() > 0)
+				RendererState::Device().updateDescriptorSets(toArrayProxy<const vk::WriteDescriptorSet>(writeDescriptorSets), nullptr);
+		}
+	};
+
 	class PipelineBuilder;
 	class Pipeline;
 
@@ -2870,7 +2904,7 @@ namespace VK
 				);
 			}
 		}
-		virtual void SetBindingLayout(CoreLib::ArrayView<DescriptorSetLayout*> descriptorSets) override
+		virtual void SetBindingLayout(CoreLib::ArrayView<GameEngine::DescriptorSetLayout*> descriptorSets) override
 		{
 			//if (bindType == BindingType::Unused) return;//TODO: Should do something else?
 
@@ -3272,7 +3306,7 @@ namespace VK
 			//TODO: Can make index buffer use 16 bit ints if possible?
 			buffer.bindIndexBuffer(dynamic_cast<VK::BufferObject*>(indexBuffer)->Buffer(), { 0 }, vk::IndexType::eUint32);
 		}
-		virtual void BindDescriptorSet(int binding, DescriptorSet* descSet) override
+		virtual void BindDescriptorSet(int binding, GameEngine::DescriptorSet* descSet) override
 		{
 			// Should maybe look something like this:
 			//dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->Update();
@@ -4229,7 +4263,7 @@ namespace VK
 			throw CoreLib::NotImplementedException();
 		}
 
-		virtual DescriptorSet * CreateDescriptorSet(DescriptorSetLayout* layout) override
+		virtual DescriptorSet * CreateDescriptorSet(GameEngine::DescriptorSetLayout* layout) override
 		{
 			throw CoreLib::NotImplementedException();
 		}
