@@ -2783,7 +2783,6 @@ namespace VK
 	{
 	public:
 		CoreLib::List<vk::DescriptorSetLayout> descriptorSetLayouts;
-		CoreLib::List<vk::DescriptorPoolSize> descriptorPoolSizes;
 		vk::PipelineLayout pipelineLayout;
 		vk::Pipeline pipeline;
 	public:
@@ -2801,7 +2800,7 @@ namespace VK
 	{
 	public:
 		CoreLib::String debugName;
-		CoreLib::List<vk::DescriptorSetLayoutBinding> layoutBindings;
+		CoreLib::List<vk::DescriptorSetLayout> setLayouts;
 		CoreLib::List<vk::PushConstantRange> pushConstantRanges;//TODO:
 		CoreLib::List<vk::PipelineShaderStageCreateInfo> shaderStages;
 		CoreLib::List<vk::VertexInputBindingDescription> vertexBindingDescriptions;
@@ -2912,14 +2911,10 @@ namespace VK
 		}
 		virtual void SetBindingLayout(CoreLib::ArrayView<GameEngine::DescriptorSetLayout*> descriptorSets) override
 		{
-			//layoutBindings.Add(
-			//	vk::DescriptorSetLayoutBinding()
-			//	.setBinding(bindingId)
-			//	.setDescriptorType(TranslateBindingType(bindType))
-			//	.setDescriptorCount(1)
-			//	.setStageFlags(vk::ShaderStageFlagBits::eAllGraphics)//TODO: improve
-			//	.setPImmutableSamplers(nullptr)
-			//);
+			for (auto& set : descriptorSets)
+			{
+				setLayouts.Add(reinterpret_cast<VK::DescriptorSetLayout*>(set)->layout);
+			}
 		}
 		virtual void SetDebugName(CoreLib::String name) override
 		{
@@ -2933,22 +2928,11 @@ namespace VK
 
 	Pipeline::Pipeline(RenderTargetLayout* renderTargetLayout, PipelineBuilder* pipelineBuilder)
 	{
-		// Prepare to create Descriptor Set
-		vk::DescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = vk::DescriptorSetLayoutCreateInfo()
-			.setFlags(vk::DescriptorSetLayoutCreateFlags())
-			.setBindingCount(pipelineBuilder->layoutBindings.Count())
-			.setPBindings(pipelineBuilder->layoutBindings.Buffer());
-
-		this->descriptorSetLayouts.Add(RendererState::Device().createDescriptorSetLayout(descriptorSetLayoutCreateInfo));
-
-		for (auto setLayout : pipelineBuilder->layoutBindings)
-			this->descriptorPoolSizes.Add(vk::DescriptorPoolSize(setLayout.descriptorType, setLayout.descriptorCount));
-
 		// Create Pipeline Layout
 		vk::PipelineLayoutCreateInfo layoutCreateInfo = vk::PipelineLayoutCreateInfo()
 			.setFlags(vk::PipelineLayoutCreateFlags())
-			.setSetLayoutCount(descriptorSetLayouts.Count())
-			.setPSetLayouts(descriptorSetLayouts.Buffer())
+			.setSetLayoutCount(pipelineBuilder->setLayouts.Count())
+			.setPSetLayouts(pipelineBuilder->setLayouts.Buffer())
 			.setPushConstantRangeCount(pipelineBuilder->pushConstantRanges.Count())
 			.setPPushConstantRanges(pipelineBuilder->pushConstantRanges.Buffer());
 
