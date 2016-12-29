@@ -3189,14 +3189,14 @@ namespace VK
 			buffer.end();
 		}
 
-		virtual void BindVertexBuffer(Buffer* vertexBuffer) override
+		virtual void BindVertexBuffer(Buffer* vertexBuffer, int byteOffset) override
 		{
-			buffer.bindVertexBuffers(0, dynamic_cast<VK::BufferObject*>(vertexBuffer)->Buffer(), { 0 });
+			buffer.bindVertexBuffers(0, dynamic_cast<VK::BufferObject*>(vertexBuffer)->Buffer(), { (vk::DeviceSize)byteOffset });
 		}
-		virtual void BindIndexBuffer(Buffer* indexBuffer) override
+		virtual void BindIndexBuffer(Buffer* indexBuffer, int byteOffset) override
 		{
 			//TODO: Can make index buffer use 16 bit ints if possible?
-			buffer.bindIndexBuffer(dynamic_cast<VK::BufferObject*>(indexBuffer)->Buffer(), { 0 }, vk::IndexType::eUint32);
+			buffer.bindIndexBuffer(dynamic_cast<VK::BufferObject*>(indexBuffer)->Buffer(), { (vk::DeviceSize)byteOffset }, vk::IndexType::eUint32);
 		}
 		virtual void BindDescriptorSet(int binding, GameEngine::DescriptorSet* descSet) override
 		{
@@ -4099,11 +4099,10 @@ namespace VK
 			RendererState::RenderQueue().presentKHR(presentInfo);
 		}
 
-		BufferObject* CreateBuffer(BufferUsage usage)
+		virtual BufferObject* CreateBuffer(BufferUsage usage) override
 		{
 			return new BufferObject(TranslateUsageFlags(usage), vk::MemoryPropertyFlagBits::eDeviceLocal);
 		}
-
 
 		virtual BufferObject* CreateMappedBuffer(BufferUsage usage) override
 		{
@@ -4164,7 +4163,7 @@ namespace VK
 
 		virtual DescriptorSet * CreateDescriptorSet(GameEngine::DescriptorSetLayout* layout) override
 		{
-			throw CoreLib::NotImplementedException("CreateDescriptorSet");
+			return new DescriptorSet(reinterpret_cast<VK::DescriptorSetLayout*>(layout));
 		}
 
 		virtual int GetDescriptorPoolCount() override
