@@ -583,7 +583,7 @@ namespace VK
 			return State().descriptorPoolChain->Last()->pool;
 		}
 
-		static std::pair<vk::DescriptorPool, vk::DescriptorSet> AllocateDescriptorSet(CoreLib::List<vk::DescriptorSetLayout> layouts)
+		static std::pair<vk::DescriptorPool, vk::DescriptorSet> AllocateDescriptorSet(vk::DescriptorSetLayout layout)
 		{
 			std::pair<vk::DescriptorPool, vk::DescriptorSet> res;
 			res.first = State().DescriptorPool();
@@ -591,8 +591,8 @@ namespace VK
 			// Create Descriptor Set
 			vk::DescriptorSetAllocateInfo descriptorSetAllocateInfo = vk::DescriptorSetAllocateInfo()
 				.setDescriptorPool(res.first)
-				.setDescriptorSetCount(layouts.Count())
-				.setPSetLayouts(layouts.Buffer());
+				.setDescriptorSetCount(1)
+				.setPSetLayouts(&layout);
 
 			std::vector<vk::DescriptorSet> descriptorSets = RendererState::Device().allocateDescriptorSets(descriptorSetAllocateInfo);
 			res.second = descriptorSets[0];
