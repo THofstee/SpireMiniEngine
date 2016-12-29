@@ -2179,8 +2179,6 @@ namespace VK
 
 			if (data == nullptr) return;
 
-			//auto transferBegin = CoreLib::Diagnostics::PerformanceCounter::Start();
-
 			// If the buffer is mappable, map and memcpy
 			if (location & vk::MemoryPropertyFlagBits::eHostVisible)
 			{
@@ -2297,32 +2295,6 @@ namespace VK
 					RendererState::DestroyCommandBuffer(RendererState::TransferCommandPool(), transferCommandBuffer);
 				}
 			}
-
-			//auto transferEnd = CoreLib::Diagnostics::PerformanceCounter::End(transferBegin);
-			//double elapsedTime = CoreLib::Diagnostics::PerformanceCounter::ToSeconds(transferEnd);
-
-			//#if _DEBUG
-			//			// Print information about transfer rate
-			//			CoreLib::Array<CoreLib::String, 4> granularity;
-			//			granularity.Add(L"B");
-			//			granularity.Add(L"KB");
-			//			granularity.Add(L"MB");
-			//			granularity.Add(L"GB");
-			//
-			//			int count = 0;
-			//			float dataSize = (float)size;
-			//			while (dataSize > 1024.0f) {
-			//				dataSize /= 1024.0f;
-			//				count++;
-			//				if (count == 3) break;
-			//			}
-			//
-			//			CoreLib::Diagnostics::Debug::Write(L"Transfer time (");
-			//			if(count == 0) CoreLib::Diagnostics::Debug::Write(CoreLib::String(size) + L" " + granularity[count] + L"): ");
-			//			else CoreLib::Diagnostics::Debug::Write(CoreLib::String(dataSize, L"%.2f") + L" " + granularity[count] + L"): ");
-			//			CoreLib::Diagnostics::Debug::Write(CoreLib::String(elapsedTime*1000.0f, L"%.2f") + L"ms");
-			//			CoreLib::Diagnostics::Debug::WriteLine(L" (" + CoreLib::String((float)size / elapsedTime / 1024.0f / 1024.0f / 1024.0f, L"%.2f") + L" GB/s)");
-			//#endif
 		}
 		void SetData(void* data, int psize)
 		{
