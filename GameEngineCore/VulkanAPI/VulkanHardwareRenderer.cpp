@@ -2632,31 +2632,142 @@ namespace VK
 
 	class DescriptorSetLayout : public GameEngine::DescriptorSetLayout
 	{
-	protected:
-		DescriptorSetLayout() {}
+	public:
+		CoreLib::List<vk::DescriptorSetLayoutBinding> layoutBindings;
+		vk::DescriptorSetLayout layout;
+
+		DescriptorSetLayout(CoreLib::ArrayView<GameEngine::DescriptorLayout> descriptors)
+		{
+			for (auto& desc : descriptors)
+			{
+				layoutBindings.Add(
+					vk::DescriptorSetLayoutBinding()
+					.setBinding(desc.Location)
+					.setDescriptorType(TranslateBindingType(desc.Type))
+					.setDescriptorCount(1)
+					.setStageFlags(vk::ShaderStageFlagBits::eAllGraphics)//TODO: improve
+					.setPImmutableSamplers(nullptr)
+				);
+			}
+
+			vk::DescriptorSetLayoutCreateInfo createInfo = vk::DescriptorSetLayoutCreateInfo()
+				.setFlags(vk::DescriptorSetLayoutCreateFlags())
+				.setBindingCount(layoutBindings.Count())
+				.setPBindings(layoutBindings.Buffer());
+
+			layout = RendererState::Device().createDescriptorSetLayout(createInfo);
+		}
+		~DescriptorSetLayout() {}
 	};
 
 	class DescriptorSet : public GameEngine::DescriptorSet
 	{
 	public:
+		//TODO: previous implementation in PipelineInstance would keep track of
+		// previously bound descriptors and then create new imageInfo/bufferInfo
+		// and swap them with the old one, as well as only updating the descriptors
+		// that had changed. Should this do that too?
+		CoreLib::List<vk::DescriptorImageInfo> imageInfo;
+		CoreLib::List<vk::DescriptorBufferInfo> bufferInfo;
 		CoreLib::List<vk::WriteDescriptorSet> writeDescriptorSets;
+		vk::DescriptorPool descriptorPool;
 		vk::DescriptorSet descriptorSet;
 	public:
+		DescriptorSet(DescriptorSetLayout* layout)
+		{
+			std::pair<vk::DescriptorPool, vk::DescriptorSet> res = RendererState::AllocateDescriptorSet(layout->layout);
+			this->descriptorPool = res.first;
+			this->descriptorSet = res.second;
+		}
+		~DescriptorSet()
+		{
+			if (descriptorSet) RendererState::Device().freeDescriptorSets(descriptorPool, descriptorSet);
+		}
+
 		virtual void BeginUpdate() override
 		{
+			imageInfo.Clear();
+			bufferInfo.Clear();
 			writeDescriptorSets.Clear();
 		}
 
 		virtual void Update(int location, GameEngine::Texture* texture) override
 		{
+			VK::Texture* internalTexture = reinterpret_cast<VK::Texture*>(texture);
+
+			imageInfo.Add(
+				vk::DescriptorImageInfo()
+				.setSampler(vk::Sampler())
+				.setImageView(internalTexture->view)
+				.setImageLayout(vk::ImageLayout::eGeneral)//TODO: specify
+			);
+
+			writeDescriptorSets.Add(
+				vk::WriteDescriptorSet()
+				.setDstSet(this->descriptorSet)
+				.setDstBinding(location)
+				.setDstArrayElement(0)
+				.setDescriptorCount(1)
+				.setDescriptorType(vk::DescriptorType::eSampler)
+				.setPImageInfo(&imageInfo.Last())
+				.setPBufferInfo(nullptr)
+				.setPTexelBufferView(nullptr)
+			);
 		}
 
 		virtual void Update(int location, GameEngine::TextureSampler* sampler) override
 		{
+			VK::TextureSampler* internalSampler = reinterpret_cast<VK::TextureSampler*>(sampler);
+			
+			imageInfo.Add(
+				vk::DescriptorImageInfo()
+				.setSampler(internalSampler->sampler)
+				.setImageView(vk::ImageView())
+				.setImageLayout(vk::ImageLayout::eUndefined)
+			);
+
+			writeDescriptorSets.Add(
+				vk::WriteDescriptorSet()
+				.setDstSet(this->descriptorSet)
+				.setDstBinding(location)
+				.setDstArrayElement(0)
+				.setDescriptorCount(1)
+				.setDescriptorType(vk::DescriptorType::eSampler)
+				.setPImageInfo(&imageInfo.Last())
+				.setPBufferInfo(nullptr)
+				.setPTexelBufferView(nullptr)
+			);
 		}
 
 		virtual void Update(int location, GameEngine::Buffer* buffer, int offset = 0, int length = -1) override
 		{
+			VK::BufferObject* internalBuffer = reinterpret_cast<VK::BufferObject*>(buffer);
+
+			vk::DescriptorType descriptorType;
+			if (internalBuffer->usage & vk::BufferUsageFlagBits::eUniformBuffer)
+				descriptorType = vk::DescriptorType::eUniformBuffer;
+			else
+				descriptorType = vk::DescriptorType::eStorageBuffer;
+
+			int range = (length == -1) ? internalBuffer->backingSize : length;
+			bufferInfo.Add(
+				vk::DescriptorBufferInfo()
+				.setBuffer(internalBuffer->buffer)
+				.setOffset(offset)
+				.setRange(range)
+			);
+
+			writeDescriptorSets.Add(
+				vk::WriteDescriptorSet()
+				.setDstSet(this->descriptorSet)
+				.setDstBinding(location)
+				.setDstArrayElement(0)
+				.setDescriptorCount(1)
+				.setDescriptorType(descriptorType)
+				.setPImageInfo(nullptr)
+				.setPBufferInfo(&bufferInfo.Last())
+				.setPTexelBufferView(nullptr)
+			);
 		}
 
 		virtual void EndUpdate() override
