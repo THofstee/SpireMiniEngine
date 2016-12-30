@@ -907,10 +907,25 @@ namespace VK
 		}
 	}
 
+	vk::AttachmentLoadOp TranslateLoadOp(LoadOp op)
 	{
+		switch (op)
+		{
+		case LoadOp::Load: return vk::AttachmentLoadOp::eLoad;
+		case LoadOp::Clear: return vk::AttachmentLoadOp::eClear;
+		case LoadOp::DontCare: return vk::AttachmentLoadOp::eDontCare;
+		default: throw CoreLib::NotImplementedException("TranslateLoadOp");
+		}
 	}
 
+	vk::AttachmentStoreOp TranslateStoreOp(StoreOp op)
 	{
+		switch (op)
+		{
+		case StoreOp::Store: return vk::AttachmentStoreOp::eStore;
+		case StoreOp::DontCare: return vk::AttachmentStoreOp::eDontCare;
+		default: throw CoreLib::NotImplementedException("TranslateStoreOp");
+		}
 	}
 
 	/*
@@ -2417,27 +2432,6 @@ namespace VK
 			if (framebuffer) RendererState::Device().destroyFramebuffer(framebuffer);
 		}
 	};
-
-	vk::AttachmentLoadOp TranslateLoadOp(LoadOp op)
-	{
-		switch (op)
-		{
-		case LoadOp::Load: return vk::AttachmentLoadOp::eLoad;
-		case LoadOp::Clear: return vk::AttachmentLoadOp::eClear;
-		case LoadOp::DontCare: return vk::AttachmentLoadOp::eDontCare;
-		default: throw CoreLib::NotImplementedException("TranslateLoadOp");
-		}
-	}
-
-	vk::AttachmentStoreOp TranslateStoreOp(StoreOp op)
-	{
-		switch (op)
-		{
-		case StoreOp::Store: return vk::AttachmentStoreOp::eStore;
-		case StoreOp::DontCare: return vk::AttachmentStoreOp::eDontCare;
-		default: throw CoreLib::NotImplementedException("TranslateStoreOp");
-		}
-	}
 
 	class RenderTargetLayout : public GameEngine::RenderTargetLayout
 	{
