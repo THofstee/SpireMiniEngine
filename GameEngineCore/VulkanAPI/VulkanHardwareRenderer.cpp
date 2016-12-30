@@ -907,18 +907,10 @@ namespace VK
 		}
 	}
 
-	// Converts CoreLib::ArrayView to vk::ArrayProxy
-	template <typename T>
-	constexpr vk::ArrayProxy<T> toArrayProxy(CoreLib::ArrayView<typename std::remove_const<T>::type> arrayView)
 	{
-		return vk::ArrayProxy<T>(arrayView.Count(), arrayView.Buffer());
 	}
 
-	// Converts CoreLib::List to vk::ArrayProxy
-	template <typename T>
-	constexpr vk::ArrayProxy<T> toArrayProxy(CoreLib::List<typename std::remove_const<T>::type> list)
 	{
-		return vk::ArrayProxy<T>(list.Count(), list.Buffer());
 	}
 
 	/*
