@@ -43,10 +43,10 @@ namespace GameEngine
 				{
 					BinaryReader reader(new FileStream(irradianceDataFile));
 					List<float> irradianceData;
-					irradianceData.SetSize(16 * 64 * 3);
+					irradianceData.SetSize(16 * 64 * 4);
 					reader.Read(irradianceData.Buffer(), irradianceData.Count());
-					irradianceTex = hwRenderer->CreateTexture2D(TextureUsage::Sampled, 64, 16, 1, StorageFormat::RGB_F16);
-					irradianceTex->SetData(64, 16, 1, DataType::Float3, irradianceData.Buffer());
+					irradianceTex = hwRenderer->CreateTexture2D(TextureUsage::Sampled, 64, 16, 1, StorageFormat::RGBA_F16);
+					irradianceTex->SetData(64, 16, 1, DataType::Float4, irradianceData.Buffer());
 				}
 				{
 					BinaryReader reader(new FileStream(inscatterDataFile));
@@ -64,10 +64,10 @@ namespace GameEngine
 				{
 					BinaryReader reader(new FileStream(transmittanceDataFile));
 					List<float> transmittanceData;
-					transmittanceData.SetSize(256 * 64 * 3);
+					transmittanceData.SetSize(256 * 64 * 4);
 					reader.Read(transmittanceData.Buffer(), transmittanceData.Count());
-					transmittanceTex = hwRenderer->CreateTexture2D(TextureUsage::Sampled, 256, 64, 1, StorageFormat::RGB_F16);
-					transmittanceTex->SetData(0, 256, 64, 1, DataType::Float3, transmittanceData.Buffer());
+					transmittanceTex = hwRenderer->CreateTexture2D(TextureUsage::Sampled, 256, 64, 1, StorageFormat::RGBA_F16);
+					transmittanceTex->SetData(0, 256, 64, 1, DataType::Float4, transmittanceData.Buffer());
 				}
 			}
 
