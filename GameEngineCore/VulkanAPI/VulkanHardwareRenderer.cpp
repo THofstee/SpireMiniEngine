@@ -3941,6 +3941,7 @@ namespace VK
 		}
 		virtual void Present(GameEngine::Texture2D* srcImage) override
 		{
+			if (images.Count() == 0) return;
 			uint32_t nextImage = RendererState::Device().acquireNextImageKHR(swapchain, UINT64_MAX, imageAvailableSemaphore, vk::Fence()).value;
 
 			//TODO: see if following line is beneficial
