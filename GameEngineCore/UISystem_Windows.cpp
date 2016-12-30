@@ -712,6 +712,11 @@ namespace GraphicsUI
 			vertexBuffer = rendererApi->CreateBuffer(BufferUsage::ArrayBuffer);
 			indexBuffer = rendererApi->CreateBuffer(BufferUsage::ArrayBuffer);
 
+			uniformBuffer->SetData(nullptr, sizeof(orthoMatrix));
+			primitiveBuffer->SetData(nullptr, 1);
+			vertexBuffer->SetData(nullptr, 1);
+			indexBuffer->SetData(nullptr, 1);
+
 			Array<TextureUsage, 1> frameBufferLayout;
 			frameBufferLayout.Add(TextureUsage::ColorAttachment);
 
