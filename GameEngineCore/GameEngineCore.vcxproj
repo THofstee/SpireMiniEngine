@@ -232,10 +232,10 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBuilder.h" />
-    <ClInclude Include="ModuleInstance.h" />
     <ClInclude Include="MotionGraph.h" />
     <ClInclude Include="MotionGraphAnimationSynthesizer.h" />
     <ClInclude Include="MotionGraphMeshActor.h" />
+    <ClInclude Include="PipelineContext.h" />
     <ClInclude Include="PostRenderPass.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="Renderer.h" />
