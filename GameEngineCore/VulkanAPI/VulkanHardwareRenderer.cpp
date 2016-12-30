@@ -2490,10 +2490,10 @@ namespace VK
 				.setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)//
 				.setStencilStoreOp(vk::AttachmentStoreOp::eDontCare);//
 
-																	 //if (samples > 1)
-																	 //{
-																	 //	//TODO: need to resolve?
-																	 //}
+				//if (samples > 1)
+				//{
+				//	//TODO: need to resolve?
+				//}
 		}
 
 		void SetDepthAttachment(int binding, LoadOp loadOp = LoadOp::Load, StoreOp storeOp = StoreOp::Store)
