@@ -1039,9 +1039,9 @@ namespace VK
 
 			vk::ImageCreateInfo imageCreateInfo = vk::ImageCreateInfo()
 				.setFlags(vk::ImageCreateFlags())
-				.setImageType(vk::ImageType::e2D)
+				.setImageType(depth == 1 ? vk::ImageType::e2D : vk::ImageType::e3D)
 				.setFormat(TranslateStorageFormat(format))
-				.setExtent(vk::Extent3D(width, height, 1))
+				.setExtent(vk::Extent3D(width, height, depth))
 				.setMipLevels(mipLevels)
 				.setArrayLayers(arrayLayers)
 				.setSamples(SampleCount(numSamples))
@@ -1610,14 +1610,14 @@ namespace VK
 				transferCommandBuffer.blitImage(
 					oldImage, currentLayout,
 					image, vk::ImageLayout::eGeneral,
-					toArrayProxy<const vk::ImageBlit>(stagingBlitRegions),
+					vk::ArrayProxy<const vk::ImageBlit>(stagingBlitRegions.Count(), stagingBlitRegions.Buffer()),
 					vk::Filter::eNearest
 				);
 				// Blit texture to each mip level
 				transferCommandBuffer.blitImage(
 					image, vk::ImageLayout::eGeneral,
 					image, vk::ImageLayout::eGeneral,
-					toArrayProxy<const vk::ImageBlit>(blitRegions),
+					vk::ArrayProxy<const vk::ImageBlit>(blitRegions.Count(), blitRegions.Buffer()),
 					vk::Filter::eLinear
 				);
 				transferCommandBuffer.pipelineBarrier(
@@ -1713,7 +1713,7 @@ namespace VK
 				transferCommandBuffer.blitImage(
 					image, vk::ImageLayout::eGeneral,
 					image, vk::ImageLayout::eGeneral,
-					toArrayProxy<const vk::ImageBlit>(blitRegions),
+					vk::ArrayProxy<const vk::ImageBlit>(blitRegions.Count(), blitRegions.Buffer()),
 					vk::Filter::eLinear
 				);
 				transferCommandBuffer.pipelineBarrier(
@@ -1901,6 +1901,9 @@ namespace VK
 			: VK::Texture(usage, width, height, 1, mipLevels, arrayLayers, 1, newFormat)
 		{
 			this->format = newFormat;
+			this->width = width;
+			this->height = height;
+			this->arrayLayers = arrayLayers;
 		};
 
 		virtual void GetSize(int& pwidth, int& pheight, int& players) override
@@ -1915,6 +1918,31 @@ namespace VK
 		}
 
 		virtual void BuildMipmaps() override
+		{
+		}
+	};
+
+	class Texture3D : public VK::Texture, public GameEngine::Texture3D
+	{
+	private:
+		int width;
+		int height;
+		int depth;
+	public:
+		Texture3D(TextureUsage usage, int width, int height, int depth, int mipLevels, StorageFormat newFormat)
+			: VK::Texture(usage, width, height, depth, mipLevels, 1, 1, newFormat)
+		{
+			this->format = newFormat;
+		};
+
+		virtual void GetSize(int& pwidth, int& pheight, int& pdepth) override
+		{
+			pwidth = this->width;
+			pheight = this->height;
+			pdepth = this->depth;
+		}
+
+		virtual void SetData(int mipLevel, int xOffset, int yOffset, int zOffset, int pwidth, int pheight, int pdepth, DataType inputType, void * data) override
 		{
 		}
 	};
@@ -2487,6 +2515,7 @@ namespace VK
 				.setStencilStoreOp(TranslateStoreOp(storeOp));
 		}
 	public:
+		RenderTargetLayout() {};
 		RenderTargetLayout(CoreLib::ArrayView<TextureUsage> bindings)
 		{
 			depthReference.attachment = VK_ATTACHMENT_UNUSED;
@@ -2567,9 +2596,7 @@ namespace VK
 				if (renderAttachments.attachments[colorReference.attachment].handle.tex2D)
 					usage = dynamic_cast<Texture2D*>(renderAttachments.attachments[colorReference.attachment].handle.tex2D)->usage;
 				else if (renderAttachments.attachments[colorReference.attachment].handle.tex2DArray)
-				{
 					usage = dynamic_cast<Texture2DArray*>(renderAttachments.attachments[colorReference.attachment].handle.tex2DArray)->usage;
-				}
 
 				if (!(usage & TextureUsage::ColorAttachment))
 					throw HardwareRendererException("Incompatible RenderTargetLayout and RenderAttachments");
@@ -2580,15 +2607,15 @@ namespace VK
 				if (renderAttachments.attachments[depthReference.attachment].handle.tex2D)
 					usage = dynamic_cast<Texture2D*>(renderAttachments.attachments[depthReference.attachment].handle.tex2D)->usage;
 				else if (renderAttachments.attachments[depthReference.attachment].handle.tex2DArray)
-				{
 					usage = dynamic_cast<Texture2DArray*>(renderAttachments.attachments[depthReference.attachment].handle.tex2DArray)->usage;
-				}
+
 				if (!(usage & TextureUsage::DepthAttachment))
 					throw HardwareRendererException("Incompatible RenderTargetLayout and RenderAttachments");
 			}
 #endif
 			FrameBuffer* result = new FrameBuffer();
-			result->renderTargetLayout = this;
+			result->renderTargetLayout = new RenderTargetLayout;
+			*result->renderTargetLayout = *this;
 			result->renderAttachments = renderAttachments;
 			CoreLib::List<vk::ImageView> framebufferAttachmentViews;
 			for (auto attachment : renderAttachments.attachments)
@@ -2662,8 +2689,8 @@ namespace VK
 		DescriptorSet(DescriptorSetLayout* layout)
 		{
 			std::pair<vk::DescriptorPool, vk::DescriptorSet> res = RendererState::AllocateDescriptorSet(layout->layout);
-			this->descriptorPool = res.first;
-			this->descriptorSet = res.second;
+			descriptorPool = res.first;
+			descriptorSet = res.second;
 		}
 		~DescriptorSet()
 		{
@@ -2679,13 +2706,13 @@ namespace VK
 
 		virtual void Update(int location, GameEngine::Texture* texture) override
 		{
-			VK::Texture* internalTexture = reinterpret_cast<VK::Texture*>(texture);
+			VK::Texture* internalTexture = dynamic_cast<VK::Texture*>(texture);
 
 			imageInfo.Add(
 				vk::DescriptorImageInfo()
 				.setSampler(vk::Sampler())
 				.setImageView(internalTexture->view)
-				.setImageLayout(vk::ImageLayout::eGeneral)//TODO: specify
+				.setImageLayout(vk::ImageLayout::eGeneral)//TODO: specify?
 			);
 
 			writeDescriptorSets.Add(
@@ -2694,7 +2721,7 @@ namespace VK
 				.setDstBinding(location)
 				.setDstArrayElement(0)
 				.setDescriptorCount(1)
-				.setDescriptorType(vk::DescriptorType::eSampler)
+				.setDescriptorType(vk::DescriptorType::eSampledImage)
 				.setPImageInfo(&imageInfo.Last())
 				.setPBufferInfo(nullptr)
 				.setPTexelBufferView(nullptr)
@@ -2759,7 +2786,9 @@ namespace VK
 		virtual void EndUpdate() override
 		{
 			if (writeDescriptorSets.Count() > 0)
-				RendererState::Device().updateDescriptorSets(toArrayProxy<const vk::WriteDescriptorSet>(writeDescriptorSets), nullptr);
+				RendererState::Device().updateDescriptorSets(
+					vk::ArrayProxy<const vk::WriteDescriptorSet>(writeDescriptorSets.Count(), writeDescriptorSets.Buffer()), 
+					nullptr);
 		}
 	};
 
@@ -3065,6 +3094,10 @@ namespace VK
 //#endif
 	}
 
+// Toggles between a shared event for all command buffers vs a single event for 
+// each command buffer for syncrhonization. Shared event will wait for all
+// command buffers in a group to be submitted before recording any, while 
+// individual event would wait for any individual command buffer.
 #define SHARED_EVENT false
 #if SHARED_EVENT
 	class TestEvent
@@ -3170,11 +3203,13 @@ namespace VK
 		}
 		virtual void BindDescriptorSet(int binding, GameEngine::DescriptorSet* descSet) override
 		{
-			// Should maybe look something like this:
-			//dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->Update();
-
-			//if (dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->descriptorSet)
-			//	buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->pipelineLayout, 0, dynamic_cast<VK::PipelineInstance*>(pipelineInstance)->descriptorSet, nullptr);//TODO: offsets
+			VK::DescriptorSet* internalDescriptorSet = reinterpret_cast<VK::DescriptorSet*>(descSet);
+			//TODO: update buffer descriptors?
+			//TODO: pipelineLayout comes from...?
+			//TODO: descriptor set starting offset
+			//TODO: dynamicOffsets?
+			//if(internalDescriptorSet->descriptorSet)
+				//buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineLayout, 0, internalDescriptorSet->descriptorSet, nullptr);
 		}
 		virtual void BindPipeline(GameEngine::Pipeline* pipeline) override
 		{
@@ -3643,7 +3678,7 @@ namespace VK
 			if (images.Count() != oldImageCount) CreateCommandBuffers();
 			//CreateSemaphores(); //TODO: Can the semaphores get stuck?
 
-			Clear(); //TODO: Should be "re-record" with old commands and new size?
+			Clear();
 		}
 
 		virtual void ClearTexture(GameEngine::Texture2D* texture) override
@@ -4099,9 +4134,9 @@ namespace VK
 			return new Texture2DArray(usage, w, h, mipLevelCount, layers, format);
 		}
 
-		Texture3D * CreateTexture3D(TextureUsage /*usage*/, int /*w*/, int /*h*/, int /*layers*/, int /*mipLevelCount*/, StorageFormat /*format*/)
+		Texture3D * CreateTexture3D(TextureUsage usage, int w, int h, int d, int mipLevelCount, StorageFormat format)
 		{
-			throw CoreLib::NotImplementedException();
+			return new Texture3D(usage, w, h, d, mipLevelCount, format);
 		}
 
 		TextureSampler* CreateTextureSampler()
