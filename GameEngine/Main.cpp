@@ -46,8 +46,8 @@ namespace GameEngine
 			OnResized.Bind(this, &MainForm::FormResized);
 			OnFocus.Bind([](auto, auto) {Engine::Instance()->EnableInput(true); });
 			OnLostFocus.Bind([](auto, auto) {Engine::Instance()->EnableInput(false); });
-			SetClientWidth(1920);
-			SetClientHeight(1080);
+			SetClientWidth(1280);
+			SetClientHeight(720);
 		}
 		
 		void FormResized(Object *, EventArgs)
