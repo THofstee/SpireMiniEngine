@@ -369,6 +369,24 @@ namespace GameEngine
 			if (!material->MaterialGeometryModule)
 				throw InvalidOperationException("failed to load default material.");
 		}
+		pipelineBuilder->SetDebugName(identifier);
+		pipelineBuilder->SetShaders(pipelineClass->shaders.GetArrayView());
+		List<RefPtr<DescriptorSetLayout>> descSetLayouts;
+		for (auto & descSet : rs.BindingLayouts)
+		{
+			auto layout = hw->CreateDescriptorSetLayout(descSet.Value.Descriptors.GetArrayView());
+			if (descSet.Value.BindingPoint >= descSetLayouts.Count())
+				descSetLayouts.SetSize(descSet.Value.BindingPoint + 1);
+			descSetLayouts[descSet.Value.BindingPoint] = layout;
+		}
+		pipelineBuilder->SetBindingLayout(From(descSetLayouts).Select([](auto x) { return x.Ptr(); }).ToList().GetArrayView());
+
+		setAdditionalArgs(pipelineBuilder.Ptr());
+
+		pipelineClass->pipeline = pipelineBuilder->ToPipeline(renderTargetLayout);
+		pipelineClassCache[identifier] = pipelineClass;
+
+		return pipelineClass;
 	}
 	
 	SceneResource::SceneResource(RendererSharedResource * resource, SpireCompilationContext * spireCtx)
