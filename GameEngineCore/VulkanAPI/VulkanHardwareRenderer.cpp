@@ -2651,8 +2651,20 @@ namespace VK
 
 		DescriptorSetLayout(CoreLib::ArrayView<GameEngine::DescriptorLayout> descriptors)
 		{
+#if _DEBUG
+			CoreLib::Array<int, 32> usedDescriptors;
+			usedDescriptors.SetSize(32);
+			for (auto& desc : usedDescriptors)
+				desc = false;
+#endif
+
 			for (auto& desc : descriptors)
 			{
+#if _DEBUG
+				if (usedDescriptors[desc.Location] != false)
+					throw HardwareRendererException("Descriptor location already in use.");
+				usedDescriptors[desc.Location] = true;
+#endif
 				layoutBindings.Add(
 					vk::DescriptorSetLayoutBinding()
 					.setBinding(desc.Location)
