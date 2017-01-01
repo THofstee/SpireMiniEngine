@@ -74,14 +74,6 @@ namespace GameEngine
 		}
 	};
 
-	class PipelineClass
-	{
-	public:
-		CoreLib::List<Shader*> shaders;
-		CoreLib::RefPtr<Pipeline> pipeline;
-		CoreLib::List<CoreLib::RefPtr<DescriptorSetLayout>> descriptorSetLayouts;
-	};
-
 	enum class DrawableType
 	{
 		Static, Skeletal
@@ -97,21 +89,23 @@ namespace GameEngine
 		CoreLib::RefPtr<DrawableMesh> mesh = nullptr;
 		Material * material = nullptr;
 		Skeleton * skeleton = nullptr;
+		MeshVertexFormat vertFormat;
 		DrawableType type = DrawableType::Static;
-		CoreLib::Array<CoreLib::RefPtr<PipelineClass>, MaxWorldRenderPasses> pipelineInstances;
 		CoreLib::RefPtr<ModuleInstance> transformModule;
+		CoreLib::Array<PipelineClass*, MaxWorldRenderPasses> pipelineCache;
 	public:
 		CoreLib::Graphics::BBox Bounds;
+		void * ReorderKey = nullptr;
 		Drawable(SceneResource * sceneRes)
 		{
 			scene = sceneRes;
 			Bounds.Min = VectorMath::Vec3::Create(-1e9f);
 			Bounds.Max = VectorMath::Vec3::Create(1e9f);
+			pipelineCache.SetSize(pipelineCache.GetCapacity());
+			for (auto & p : pipelineCache)
+				p = nullptr;
 		}
-		inline PipelineClass * GetPipeline(int passId)
-		{
-			return pipelineInstances[passId].Ptr();
-		}
+		PipelineClass * GetPipeline(int passId, PipelineContext & pipelineManager);
 		inline ModuleInstance * GetTransformModule()
 		{
 			return transformModule.Ptr();
@@ -123,6 +117,10 @@ namespace GameEngine
 		inline Material* GetMaterial()
 		{
 			return material;
+		}
+		MeshVertexFormat & GetVertexFormat()
+		{
+			return vertFormat;
 		}
 		void UpdateMaterialUniform();
 		void UpdateTransformUniform(const VectorMath::Matrix4 & localTransform);
@@ -164,20 +162,6 @@ namespace GameEngine
 		}
 	};
 
-	struct DescriptorSetBindings
-	{
-		struct Binding
-		{
-			int index;
-			DescriptorSet * descriptorSet;
-		};
-		CoreLib::Array<Binding, 16> bindings;
-		void Bind(int id, DescriptorSet * set)
-		{
-			bindings.Add(Binding{ id, set });
-		}
-	};
-
 	class RenderPassInstance
 	{
 		friend class WorldRenderPass;
@@ -189,35 +173,10 @@ namespace GameEngine
 		Viewport viewport;
 		CommandBuffer * commandBuffer = nullptr;
 		RenderOutput * renderOutput = nullptr;
+		FixedFunctionPipelineStates * fixedFunctionStates = nullptr;
 	public:
-		template<typename TQueryable, typename TEnumerator>
-		void RecordCommandBuffer(const DescriptorSetBindings & passBindings, CullFrustum frustum, const CoreLib::Queryable<TQueryable, TEnumerator, Drawable*> & drawables)
-		{
-			renderOutput->GetSize(viewport.Width, viewport.Height);
-			commandBuffer->BeginRecording(renderOutput->GetFrameBuffer());
-			commandBuffer->SetViewport(viewport.X, viewport.Y, viewport.Width, viewport.Height);
-			commandBuffer->ClearAttachments(renderOutput->GetFrameBuffer());
-			for (auto & binding : passBindings.bindings)
-				commandBuffer->BindDescriptorSet(binding.index, binding.descriptorSet);
-			numDrawCalls = 0;
-			for (auto&& obj : drawables)
-			{
-				if (!frustum.IsBoxInFrustum(obj->Bounds))
-					continue;
-				numDrawCalls++;
-				if (auto pipelineInst = obj->GetPipeline(renderPassId))
-				{
-					auto mesh = obj->GetMesh();
-					commandBuffer->BindPipeline(pipelineInst->pipeline.Ptr());
-					commandBuffer->BindIndexBuffer(mesh->GetIndexBuffer(), mesh->indexBufferOffset);
-					commandBuffer->BindVertexBuffer(mesh->GetVertexBuffer(), mesh->vertexBufferOffset);
-					commandBuffer->BindDescriptorSet(2, obj->GetMaterial()->MaterialModule->Descriptors.Ptr());
-					commandBuffer->BindDescriptorSet(3, obj->GetTransformModule()->Descriptors.Ptr());
-					commandBuffer->DrawIndexed(0, mesh->indexCount);
-				}
-			}
-			commandBuffer->EndRecording();
-		}
+		void SetFixedOrderDrawContent(PipelineContext & pipelineManager, CullFrustum frustum, CoreLib::ArrayView<Drawable*> drawables);
+		void SetDrawContent(PipelineContext & pipelineManager, CoreLib::List<Drawable*> & reorderBuffer, CullFrustum frustum, CoreLib::ArrayView<Drawable*> drawables);
 	};
 
 	class RendererService;
@@ -275,6 +234,7 @@ namespace GameEngine
 	public:
 		CoreLib::RefPtr<Buffer> fullScreenQuadVertBuffer;
 		DeviceMemory indexBufferMemory, vertexBufferMemory;
+		PipelineContext pipelineManager;
 	public:
 		int screenWidth = 0, screenHeight = 0;
 		CoreLib::RefPtr<RenderTarget> LoadSharedRenderTarget(CoreLib::String name, StorageFormat format, float ratio = 1.0f, int w0 = 1024, int h0 = 1024);
@@ -316,31 +276,26 @@ namespace GameEngine
 	private:
 		RendererSharedResource * rendererResource;
 		SpireCompilationContext * spireContext = nullptr;
-		CoreLib::RefPtr<ModuleInstance> defaultMaterialModule;
-		CoreLib::Dictionary<int, VertexFormat> vertexFormats;
+		CoreLib::RefPtr<ModuleInstance> defaultMaterialPatternModule, defaultMaterialGeometryModule;
 		CoreLib::EnumerableDictionary<Mesh*, CoreLib::RefPtr<DrawableMesh>> meshes;
-		CoreLib::EnumerableDictionary<CoreLib::String, CoreLib::RefPtr<Shader>> shaders;
-		CoreLib::EnumerableDictionary<CoreLib::String, CoreLib::RefPtr<PipelineClass>> pipelineClassCache;
 		CoreLib::EnumerableDictionary<CoreLib::String, CoreLib::RefPtr<Texture2D>> textures;
-		//CoreLib::EnumerableDictionary<CoreLib::String, CoreLib::RefPtr<Material>> materials;
-		CoreLib::RefPtr<ModuleInstance> CreateMaterialModuleInstance(Material* material, const char * moduleName);
-		void RegisterMaterial(Material * material);
+		CoreLib::RefPtr<ModuleInstance> CreateMaterialModuleInstance(Material* material, const char * moduleName, bool isPatternModule);
 	public:
 		CoreLib::RefPtr<DrawableMesh> LoadDrawableMesh(Mesh * mesh);
         CoreLib::RefPtr<DrawableMesh> CreateDrawableMesh(Mesh * mesh);
 
 		Texture2D* LoadTexture2D(const CoreLib::String & name, CoreLib::Graphics::TextureFile & data);
 		Texture2D* LoadTexture(const CoreLib::String & filename);
-		Shader* LoadShader(const CoreLib::String & src, void* data, int size, ShaderType shaderType);
-		VertexFormat LoadVertexFormat(MeshVertexFormat vertFormat);
-		CoreLib::RefPtr<PipelineClass> LoadMaterialPipeline(CoreLib::String identifier, Material * material, RenderTargetLayout * renderTargetLayout, MeshVertexFormat vertFormat, CoreLib::String entryPointShader, CoreLib::Procedure<PipelineBuilder*> setAdditionalPipelineArguments);
 	public:
 		DeviceMemory instanceUniformMemory, transformMemory;
+		void RegisterMaterial(Material * material);
+		
 	public:
 		SceneResource(RendererSharedResource * resource, SpireCompilationContext * spireCtx);
 		~SceneResource()
 		{
 			Clear();
+			spPopContext(spireContext);
 		}
 		void Clear();
 	};
