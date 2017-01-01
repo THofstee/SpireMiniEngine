@@ -2686,6 +2686,7 @@ namespace VK
 		vk::DescriptorPool descriptorPool;
 		vk::DescriptorSet descriptorSet;
 	public:
+		DescriptorSet() {}
 		DescriptorSet(DescriptorSetLayout* layout)
 		{
 			std::pair<vk::DescriptorPool, vk::DescriptorSet> res = RendererState::AllocateDescriptorSet(layout->layout);
@@ -2928,7 +2929,8 @@ namespace VK
 		{
 			for (auto& set : descriptorSets)
 			{
-				setLayouts.Add(reinterpret_cast<VK::DescriptorSetLayout*>(set)->layout);
+				if (set) //TODO: ?
+					setLayouts.Add(reinterpret_cast<VK::DescriptorSetLayout*>(set)->layout);
 			}
 		}
 		virtual void SetDebugName(CoreLib::String name) override
@@ -3121,6 +3123,8 @@ namespace VK
 	public:
 		const vk::CommandPool& pool;
 		vk::CommandBuffer buffer;
+		Pipeline* curPipeline;
+		CoreLib::Array<DescriptorSet, 32> pendingDescSets;
 #if SHARED_EVENT
 		CoreLib::RefPtr<TestEvent> submitEvent;
 #else
@@ -3203,6 +3207,8 @@ namespace VK
 		}
 		virtual void BindDescriptorSet(int binding, GameEngine::DescriptorSet* descSet) override
 		{
+			//TODO: can be optimized to take an array of contiguous sets
+			
 			VK::DescriptorSet* internalDescriptorSet = reinterpret_cast<VK::DescriptorSet*>(descSet);
 			//TODO: update buffer descriptors?
 			//TODO: pipelineLayout comes from...?
@@ -4117,7 +4123,11 @@ namespace VK
 
 		Texture2D* CreateTexture2D(int width, int height, StorageFormat format, DataType dataType, void* data)
 		{
-			throw CoreLib::NotImplementedException();
+			//TODO: implement
+			if (format == StorageFormat::Depth24Stencil8 || format == StorageFormat::Depth32)
+				return new Texture2D(TextureUsage::SampledDepthAttachment, width, height, 1, format);
+			else
+				return new Texture2D(TextureUsage::SampledColorAttachment, width, height, 1, format);
 		}
 
 		Texture2D* CreateTexture2D(TextureUsage usage, int width, int height, int mipLevelCount, StorageFormat format)
@@ -4127,7 +4137,8 @@ namespace VK
 
 		Texture2D* CreateTexture2D(TextureUsage usage, int width, int height, int mipLevelCount, StorageFormat format, DataType dataType, CoreLib::ArrayView<void*> mipLevelData)
 		{
-			throw CoreLib::NotImplementedException();
+			//TODO: implement
+			return new Texture2D(usage, width, height, mipLevelCount, format);
 		}
 
 		Texture2DArray * CreateTexture2DArray(TextureUsage usage, int w, int h, int layers, int mipLevelCount, StorageFormat format)
