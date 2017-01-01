@@ -3124,7 +3124,7 @@ namespace VK
 		const vk::CommandPool& pool;
 		vk::CommandBuffer buffer;
 		Pipeline* curPipeline;
-		CoreLib::Array<DescriptorSet, 32> pendingDescSets;
+		CoreLib::Array<vk::DescriptorSet, 32> pendingDescSets;
 #if SHARED_EVENT
 		CoreLib::RefPtr<TestEvent> submitEvent;
 #else
@@ -3165,6 +3165,9 @@ namespace VK
 					break;
 #endif
 			}
+
+			curPipeline = nullptr;
+			pendingDescSets.Clear();
 
 			vk::CommandBufferInheritanceInfo inheritanceInfo = vk::CommandBufferInheritanceInfo()
 				.setRenderPass(dynamic_cast<VK::RenderTargetLayout*>(renderTargetLayout)->renderPass)
@@ -3207,18 +3210,25 @@ namespace VK
 		}
 		virtual void BindDescriptorSet(int binding, GameEngine::DescriptorSet* descSet) override
 		{
-			//TODO: can be optimized to take an array of contiguous sets
-			
 			VK::DescriptorSet* internalDescriptorSet = reinterpret_cast<VK::DescriptorSet*>(descSet);
-			//TODO: update buffer descriptors?
-			//TODO: pipelineLayout comes from...?
-			//TODO: descriptor set starting offset
-			//TODO: dynamicOffsets?
-			//if(internalDescriptorSet->descriptorSet)
-				//buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineLayout, 0, internalDescriptorSet->descriptorSet, nullptr);
+
+			if (internalDescriptorSet->descriptorSet)
+			{
+				if (curPipeline == nullptr)
+					pendingDescSets[binding] = internalDescriptorSet->descriptorSet;
+				//TODO: can be optimized to take an array of contiguous sets
+				else
+					buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, curPipeline->pipelineLayout, binding, internalDescriptorSet->descriptorSet, nullptr);
+			}
 		}
 		virtual void BindPipeline(GameEngine::Pipeline* pipeline) override
 		{
+			if (curPipeline == nullptr)
+			{
+				curPipeline = reinterpret_cast<VK::Pipeline*>(pipeline);
+				for (auto& desc : pendingDescSets)
+					buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, curPipeline->pipelineLayout, 0, vk::ArrayProxy<const vk::DescriptorSet>(32, pendingDescSets.Buffer()), nullptr);
+			}
 			buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, dynamic_cast<VK::Pipeline*>(pipeline)->pipeline);
 		}
 
