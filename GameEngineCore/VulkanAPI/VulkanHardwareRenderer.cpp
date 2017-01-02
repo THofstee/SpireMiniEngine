@@ -2155,7 +2155,6 @@ namespace VK
 		int mapOffset = 0;
 		int mapSize = -1;
 		int size = 0;
-		int backingSize = 0;
 
 	public:
 		BufferObject(vk::BufferUsageFlags usage, int psize, vk::MemoryPropertyFlags location)
@@ -2182,16 +2181,16 @@ namespace VK
 
 			// Check to see how much memory we actually require
 			vk::MemoryRequirements memoryRequirements = RendererState::Device().getBufferMemoryRequirements(this->buffer);
-			this->backingSize = (int)memoryRequirements.size;
+			int backingSize = (int)memoryRequirements.size;
 
 			// If we allocate more memory than requested, recreate buffer to backing size
-			if (this->size != this->backingSize)
+			if (this->size != backingSize)
 			{
-				this->size = this->backingSize;
+				this->size = backingSize;
 
 				vk::BufferCreateInfo fullsizeBufferCreateInfo = vk::BufferCreateInfo()
 					.setFlags(vk::BufferCreateFlags())
-					.setSize(this->backingSize)
+					.setSize(this->size)
 					.setUsage(this->usage)
 					.setSharingMode(vk::SharingMode::eExclusive)
 					.setQueueFamilyIndexCount(0)
