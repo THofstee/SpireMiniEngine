@@ -2295,6 +2295,7 @@ namespace VK
 						.setSignalSemaphoreCount(0)
 						.setPSignalSemaphores(nullptr);
 
+					RendererState::TransferQueue().waitIdle(); //TODO: Remove
 					RendererState::TransferQueue().submit(transferSubmitInfo, vk::Fence());
 					RendererState::TransferQueue().waitIdle(); //TODO: Remove
 					RendererState::DestroyCommandBuffer(RendererState::TransferCommandPool(), transferCommandBuffer);
@@ -2336,7 +2337,8 @@ namespace VK
 						.setSignalSemaphoreCount(0)
 						.setPSignalSemaphores(nullptr);
 
-					RendererState::TransferQueue().submit(transferSubmitInfo, vk::Fence());
+					RendererState::TransferQueue().waitIdle(); //TODO: Remove
+					//RendererState::TransferQueue().submit(transferSubmitInfo, vk::Fence());
 					RendererState::TransferQueue().waitIdle(); //TODO: Remove
 					RendererState::DestroyCommandBuffer(RendererState::TransferCommandPool(), transferCommandBuffer);
 				}
@@ -3097,15 +3099,15 @@ namespace VK
 			.setFlags(vk::PipelineCreateFlags())
 			.setStageCount(pipelineBuilder->shaderStages.Count())
 			.setPStages(pipelineBuilder->shaderStages.Buffer())
-			.setPVertexInputState(&vertexInputCreateInfo)
-			.setPInputAssemblyState(&inputAssemblyCreateInfo)
-			.setPTessellationState(nullptr)
-			.setPViewportState(&viewportCreateInfo)
-			.setPRasterizationState(&rasterizationCreateInfo)
-			.setPMultisampleState(&multisampleCreateInfo)
-			.setPDepthStencilState(dynamic_cast<VK::RenderTargetLayout*>(renderTargetLayout)->depthReference.layout == vk::ImageLayout::eUndefined ? nullptr : &depthStencilCreateInfo)
-			.setPColorBlendState(dynamic_cast<VK::RenderTargetLayout*>(renderTargetLayout)->colorReferences.Count() == 0 ? nullptr : &colorBlendCreateInfo)
-			.setPDynamicState(&dynamicStateCreateInfo)
+			//.setPVertexInputState(&vertexInputCreateInfo)
+			//.setPInputAssemblyState(&inputAssemblyCreateInfo)
+			//.setPTessellationState(nullptr)
+			//.setPViewportState(&viewportCreateInfo)
+			//.setPRasterizationState(&rasterizationCreateInfo)
+			//.setPMultisampleState(&multisampleCreateInfo)
+			//.setPDepthStencilState(dynamic_cast<VK::RenderTargetLayout*>(renderTargetLayout)->depthReference.layout == vk::ImageLayout::eUndefined ? nullptr : &depthStencilCreateInfo)
+			//.setPColorBlendState(dynamic_cast<VK::RenderTargetLayout*>(renderTargetLayout)->colorReferences.Count() == 0 ? nullptr : &colorBlendCreateInfo)
+			//.setPDynamicState(&dynamicStateCreateInfo)
 			.setLayout(pipelineLayout)
 			.setRenderPass(dynamic_cast<VK::RenderTargetLayout*>(renderTargetLayout)->renderPass)
 			.setSubpass(0)
@@ -3123,6 +3125,19 @@ namespace VK
 //		RendererState::Device().debugMarkerSetObjectNameEXT(&nameInfo);
 //#endif
 	}
+
+	class Fence : public GameEngine::Fence
+	{
+	public:
+		Fence() {}
+		~Fence() {}
+		virtual void Reset() override
+		{
+		}
+		virtual void Wait() override
+		{
+		}
+	};
 
 // Toggles between a shared event for all command buffers vs a single event for 
 // each command buffer for syncrhonization. Shared event will wait for all
@@ -3796,7 +3811,7 @@ namespace VK
 			RendererState::RenderQueue().submit(submitInfo, primaryFence);
 		}
 
-		virtual void ExecuteCommandBuffers(GameEngine::FrameBuffer* frameBuffer, CoreLib::ArrayView<GameEngine::CommandBuffer*> commands) override
+		virtual void ExecuteCommandBuffers(GameEngine::FrameBuffer* frameBuffer, CoreLib::ArrayView<GameEngine::CommandBuffer*> commands, GameEngine::Fence* fence) override
 		{
 			// Create command buffer begin info
 			vk::CommandBufferBeginInfo primaryBeginInfo = vk::CommandBufferBeginInfo()
@@ -4245,6 +4260,11 @@ namespace VK
 		virtual int GetDescriptorPoolCount() override
 		{
 			throw CoreLib::NotImplementedException("GetDescriptorPoolCount");
+		}
+
+		Fence* CreateFence()
+		{
+			return new Fence();
 		}
 
 		CommandBuffer* CreateCommandBuffer()
