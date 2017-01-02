@@ -2157,8 +2157,14 @@ namespace VK
 		int size = 0;
 		int backingSize = 0;
 
-		void CreateBuffer(int psize)
+	public:
+		BufferObject(vk::BufferUsageFlags usage, int psize, vk::MemoryPropertyFlags location)
 		{
+			//TODO: Should pass as input a requiredLocation and an optimalLocation?
+			this->location = location;
+			this->usage = usage;
+			this->size = psize;
+
 			vk::BufferCreateInfo bufferCreateInfo = vk::BufferCreateInfo()
 				.setFlags(vk::BufferCreateFlags())
 				.setSize(psize)
@@ -2194,35 +2200,15 @@ namespace VK
 			this->memory = RendererState::Device().allocateMemory(fullsizeMemoryAllocateInfo);
 			RendererState::Device().bindBufferMemory(this->buffer, this->memory, 0);
 		}
-		void DestroyBuffer()
+		~BufferObject()
 		{
 			if (this->buffer) RendererState::Device().destroyBuffer(this->buffer);
 			if (this->memory) RendererState::Device().freeMemory(this->memory);
 		}
-		void Resize(int psize)
+		void SetDataAsync(int offset, void* data, int psize)
 		{
-			this->size = psize;
-
-			if (size <= backingSize)
-				return;
-
-			DestroyBuffer();
-			CreateBuffer(psize);
-		}
-	public:
-		BufferObject(vk::BufferUsageFlags usage, vk::MemoryPropertyFlags location)
-		{
-			//TODO: Should pass as input a requiredLocation and an optimalLocation?
-			this->location = location;
-			this->usage = usage;
-		}
-		~BufferObject()
-		{
-			DestroyBuffer();
-		}
-		const vk::Buffer& Buffer()
-		{
-			return this->buffer;
+			//TODO: implement
+			SetData(offset, data, psize);
 		}
 		void SetData(int offset, void* data, int psize)
 		{
@@ -2230,9 +2216,8 @@ namespace VK
 			if (!(location & vk::MemoryPropertyFlagBits::eHostVisible))
 				this->usage |= vk::BufferUsageFlagBits::eTransferDst;
 
-			Resize(offset + psize);
-
-			if (data == nullptr) return;
+			if (data == nullptr)
+				throw HardwareRendererException("Initialize buffer with size preferred.");
 
 			// If the buffer is mappable, map and memcpy
 			if (location & vk::MemoryPropertyFlagBits::eHostVisible)
