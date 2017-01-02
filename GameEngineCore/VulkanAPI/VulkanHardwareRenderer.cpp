@@ -3157,6 +3157,7 @@ namespace VK
 		const vk::CommandPool& pool;
 		vk::CommandBuffer buffer;
 		Pipeline* curPipeline;
+		CoreLib::Array<uint32_t, 32> pendingOffsets;
 		CoreLib::Array<vk::DescriptorSet, 32> pendingDescSets;
 #if SHARED_EVENT
 		CoreLib::RefPtr<TestEvent> submitEvent;
@@ -3200,6 +3201,7 @@ namespace VK
 			}
 
 			curPipeline = nullptr;
+			pendingOffsets.Clear();
 			pendingDescSets.Clear();
 
 			vk::CommandBufferInheritanceInfo inheritanceInfo = vk::CommandBufferInheritanceInfo()
@@ -3234,12 +3236,12 @@ namespace VK
 
 		virtual void BindVertexBuffer(Buffer* vertexBuffer, int byteOffset) override
 		{
-			buffer.bindVertexBuffers(0, dynamic_cast<VK::BufferObject*>(vertexBuffer)->Buffer(), { (vk::DeviceSize)byteOffset });
+			buffer.bindVertexBuffers(0, dynamic_cast<VK::BufferObject*>(vertexBuffer)->buffer, { (vk::DeviceSize)byteOffset });
 		}
 		virtual void BindIndexBuffer(Buffer* indexBuffer, int byteOffset) override
 		{
 			//TODO: Can make index buffer use 16 bit ints if possible?
-			buffer.bindIndexBuffer(dynamic_cast<VK::BufferObject*>(indexBuffer)->Buffer(), { (vk::DeviceSize)byteOffset }, vk::IndexType::eUint32);
+			buffer.bindIndexBuffer(dynamic_cast<VK::BufferObject*>(indexBuffer)->buffer, { (vk::DeviceSize)byteOffset }, vk::IndexType::eUint32);
 		}
 		virtual void BindDescriptorSet(int binding, GameEngine::DescriptorSet* descSet) override
 		{
@@ -3248,8 +3250,10 @@ namespace VK
 			if (internalDescriptorSet->descriptorSet)
 			{
 				if (curPipeline == nullptr)
-					pendingDescSets[binding] = internalDescriptorSet->descriptorSet;
-				//TODO: can be optimized to take an array of contiguous sets
+				{
+					pendingDescSets.Add(internalDescriptorSet->descriptorSet);
+					pendingOffsets.Add(binding);
+				}
 				else
 					buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, curPipeline->pipelineLayout, binding, internalDescriptorSet->descriptorSet, nullptr);
 			}
@@ -3259,8 +3263,13 @@ namespace VK
 			if (curPipeline == nullptr)
 			{
 				curPipeline = reinterpret_cast<VK::Pipeline*>(pipeline);
-				for (auto& desc : pendingDescSets)
-					buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, curPipeline->pipelineLayout, 0, vk::ArrayProxy<const vk::DescriptorSet>(32, pendingDescSets.Buffer()), nullptr);
+				for(int k = 0; k < pendingDescSets.Count(); k++)
+					buffer.bindDescriptorSets(
+						vk::PipelineBindPoint::eGraphics,
+						curPipeline->pipelineLayout,
+						pendingOffsets[k],
+						pendingDescSets[k],
+						nullptr);
 			}
 			buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, dynamic_cast<VK::Pipeline*>(pipeline)->pipeline);
 		}
@@ -4165,14 +4174,14 @@ namespace VK
 			RendererState::RenderQueue().presentKHR(presentInfo);
 		}
 
-		virtual BufferObject* CreateBuffer(BufferUsage usage) override
+		virtual BufferObject* CreateBuffer(BufferUsage usage, int size) override
 		{
-			return new BufferObject(TranslateUsageFlags(usage), vk::MemoryPropertyFlagBits::eDeviceLocal);
+			return new BufferObject(TranslateUsageFlags(usage), size, vk::MemoryPropertyFlagBits::eDeviceLocal);
 		}
 
-		virtual BufferObject* CreateMappedBuffer(BufferUsage usage) override
+		virtual BufferObject* CreateMappedBuffer(BufferUsage usage, int size) override
 		{
-			return new BufferObject(TranslateUsageFlags(usage), vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+			return new BufferObject(TranslateUsageFlags(usage), size, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
 		}
 
 		Texture2D* CreateTexture2D(int width, int height, StorageFormat format, DataType dataType, void* data)
@@ -4254,6 +4263,16 @@ namespace VK
 		virtual int StorageBufferAlignment() override
 		{
 			return (int)RendererState::PhysicalDevice().getProperties().limits.minStorageBufferOffsetAlignment;
+		}
+
+		virtual void BeginDataTransfer() override
+		{
+			//TODO: implement
+		}
+
+		virtual void EndDataTransfer() override
+		{
+			//TODO: implement
 		}
 
 		virtual void * GetWindowHandle() override
