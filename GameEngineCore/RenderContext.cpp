@@ -130,8 +130,8 @@ namespace GameEngine
         result->indexBufferOffset = (int)((char*)rendererResource->indexBufferMemory.Alloc(mesh->Indices.Count() * sizeof(mesh->Indices[0])) - (char*)rendererResource->indexBufferMemory.BufferPtr());
         result->vertexFormat = rendererResource->pipelineManager.LoadVertexFormat(mesh->GetVertexFormat());
         result->vertexCount = mesh->GetVertexCount();
-        rendererResource->indexBufferMemory.GetBuffer()->SetData(result->indexBufferOffset, mesh->Indices.Buffer(), mesh->Indices.Count() * sizeof(mesh->Indices[0]));
-        rendererResource->vertexBufferMemory.GetBuffer()->SetData(result->vertexBufferOffset, mesh->GetVertexBuffer(), mesh->GetVertexCount() * result->vertexFormat.Size());
+        rendererResource->indexBufferMemory.SetData(result->indexBufferOffset, mesh->Indices.Buffer(), mesh->Indices.Count() * sizeof(mesh->Indices[0]));
+        rendererResource->vertexBufferMemory.SetData(result->vertexBufferOffset, mesh->GetVertexBuffer(), mesh->GetVertexCount() * result->vertexFormat.Size());
         result->indexCount = mesh->Indices.Count();
         return result;
     }
@@ -572,6 +572,15 @@ namespace GameEngine
 		}
 	}
 
+	int RoundUpToAlignment(int val, int alignment)
+	{
+		int r = val % alignment;
+		if (r == 0)
+			return val;
+		else
+			return val + alignment - r;
+	}
+
 	ModuleInstance * RendererSharedResource::CreateModuleInstance(SpireModule * shaderModule, DeviceMemory * uniformMemory, int uniformBufferSize)
 	{
 		ModuleInstance * rs = new ModuleInstance(shaderModule);
@@ -579,7 +588,8 @@ namespace GameEngine
 		rs->BufferLength = Math::Max(spModuleGetParameterBufferSize(shaderModule), uniformBufferSize);
 		if (rs->BufferLength > 0)
 		{
-			rs->UniformPtr = (unsigned char *)uniformMemory->Alloc(rs->BufferLength);
+			rs->BufferLength = RoundUpToAlignment(rs->BufferLength, hardwareRenderer->UniformBufferAlignment());;
+			rs->UniformPtr = (unsigned char *)uniformMemory->Alloc(rs->BufferLength * DynamicBufferLengthMultiplier);
 			rs->UniformMemory = uniformMemory;
 			rs->BufferOffset = (int)(rs->UniformPtr - (unsigned char*)uniformMemory->BufferPtr());
 		}
@@ -657,7 +667,7 @@ namespace GameEngine
 			1.0f, 1.0f, 1.0f, 1.0f,
 			-1.0f, 1.0f, 0.0f, 1.0f
 		};
-		fullScreenQuadVertBuffer = hardwareRenderer->CreateBuffer(BufferUsage::ArrayBuffer);
+		fullScreenQuadVertBuffer = hardwareRenderer->CreateBuffer(BufferUsage::ArrayBuffer, sizeof(fsTri));
 		fullScreenQuadVertBuffer->SetData((void*)&fsTri[0], sizeof(fsTri));
 
 		// Create common texture samplers
