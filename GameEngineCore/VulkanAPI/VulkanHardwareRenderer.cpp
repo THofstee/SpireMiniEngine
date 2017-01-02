@@ -3129,13 +3129,26 @@ namespace VK
 	class Fence : public GameEngine::Fence
 	{
 	public:
-		Fence() {}
-		~Fence() {}
+		vk::Fence fence;
+	public:
+		Fence()
+		{
+			vk::FenceCreateInfo fenceCreateInfo = vk::FenceCreateInfo()
+				.setFlags(vk::FenceCreateFlagBits::eSignaled);
+
+			fence = RendererState::Device().createFence(fenceCreateInfo);
+		}
+		~Fence()
+		{
+			if (fence) RendererState::Device().destroyFence(fence);
+		}
 		virtual void Reset() override
 		{
+			//RendererState::Device().resetFences(fence);
 		}
 		virtual void Wait() override
 		{
+			//RendererState::Device().waitForFences(fence, true, UINT64_MAX);
 		}
 	};
 
