@@ -2314,11 +2314,11 @@ namespace VK
 					int dataOffset = 0;
 					while (remainingSize > 65536)
 					{
-						transferCommandBuffer.updateBuffer(this->buffer, offset, 65536, (uint32_t*)((char*)data + dataOffset));
+						transferCommandBuffer.updateBuffer(this->buffer, offset + dataOffset, 65536, (uint32_t*)((char*)data + dataOffset));
 						remainingSize -= 65536;
 						dataOffset += 65536;
 					}
-					transferCommandBuffer.updateBuffer(this->buffer, offset, remainingSize, (uint32_t*)((char*)data + dataOffset));
+					transferCommandBuffer.updateBuffer(this->buffer, offset + dataOffset, remainingSize, (uint32_t*)((char*)data + dataOffset));
 					transferCommandBuffer.end();
 
 					// Submit to queue
