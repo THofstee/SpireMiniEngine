@@ -44,7 +44,7 @@ namespace GameEngine
 				{
 					BinaryReader reader(new FileStream(irradianceDataFile));
 					List<float> irradianceData;
-					irradianceData.SetSize(16 * 64 * 4);
+					irradianceData.SetSize(16 * 64 * 3);
 					reader.Read(irradianceData.Buffer(), irradianceData.Count());
 					irradianceTex = hwRenderer->CreateTexture2D(TextureUsage::Sampled, 64, 16, 1, StorageFormat::RGBA_F16);
 					List<char> irradianceData4 = Graphics::TranslateThreeChannelTextureFormat((char*)irradianceData.Buffer(), 16 * 64, sizeof(float));
@@ -66,7 +66,7 @@ namespace GameEngine
 				{
 					BinaryReader reader(new FileStream(transmittanceDataFile));
 					List<float> transmittanceData;
-					transmittanceData.SetSize(256 * 64 * 4);
+					transmittanceData.SetSize(256 * 64 * 3);
 					reader.Read(transmittanceData.Buffer(), transmittanceData.Count());
 					transmittanceTex = hwRenderer->CreateTexture2D(TextureUsage::Sampled, 256, 64, 1, StorageFormat::RGBA_F16);
 					List<char> irradianceData4 = Graphics::TranslateThreeChannelTextureFormat((char*)transmittanceData.Buffer(), 256 * 64, sizeof(float));
