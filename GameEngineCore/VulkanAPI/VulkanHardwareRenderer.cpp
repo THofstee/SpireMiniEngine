@@ -2165,37 +2165,48 @@ namespace VK
 			this->usage = usage;
 			this->size = psize;
 
+			// If we can't map the buffer, we need to specify it will be a transfer dest
+			if (!(this->location & vk::MemoryPropertyFlagBits::eHostVisible))
+				this->usage |= vk::BufferUsageFlagBits::eTransferDst;
+
+			// Create a buffer with the requested size
 			vk::BufferCreateInfo bufferCreateInfo = vk::BufferCreateInfo()
 				.setFlags(vk::BufferCreateFlags())
-				.setSize(psize)
-				.setUsage(usage)
+				.setSize(this->size)
+				.setUsage(this->usage)
 				.setSharingMode(vk::SharingMode::eExclusive)
 				.setQueueFamilyIndexCount(0)
 				.setPQueueFamilyIndices(nullptr);
 
 			this->buffer = RendererState::Device().createBuffer(bufferCreateInfo);
 
+			// Check to see how much memory we actually require
 			vk::MemoryRequirements memoryRequirements = RendererState::Device().getBufferMemoryRequirements(this->buffer);
 			this->backingSize = (int)memoryRequirements.size;
 
-			this->size = this->backingSize;
+			// If we allocate more memory than requested, recreate buffer to backing size
+			if (this->size != this->backingSize)
+			{
+				this->size = this->backingSize;
 
-			vk::BufferCreateInfo fullsizeBufferCreateInfo = vk::BufferCreateInfo()
-				.setFlags(vk::BufferCreateFlags())
-				.setSize(this->backingSize)
-				.setUsage(usage)
-				.setSharingMode(vk::SharingMode::eExclusive)
-				.setQueueFamilyIndexCount(0)
-				.setPQueueFamilyIndices(nullptr);
+				vk::BufferCreateInfo fullsizeBufferCreateInfo = vk::BufferCreateInfo()
+					.setFlags(vk::BufferCreateFlags())
+					.setSize(this->backingSize)
+					.setUsage(this->usage)
+					.setSharingMode(vk::SharingMode::eExclusive)
+					.setQueueFamilyIndexCount(0)
+					.setPQueueFamilyIndices(nullptr);
 
-			RendererState::Device().destroyBuffer(this->buffer);
-			this->buffer = RendererState::Device().createBuffer(fullsizeBufferCreateInfo);
+				RendererState::Device().destroyBuffer(this->buffer);
+				this->buffer = RendererState::Device().createBuffer(fullsizeBufferCreateInfo);
+			}
 
+			// Allocate memory for the buffer
 			vk::MemoryRequirements fullsizeMemoryRequirements = RendererState::Device().getBufferMemoryRequirements(this->buffer);
 
 			vk::MemoryAllocateInfo fullsizeMemoryAllocateInfo = vk::MemoryAllocateInfo()
 				.setAllocationSize(fullsizeMemoryRequirements.size)
-				.setMemoryTypeIndex(GetMemoryType(fullsizeMemoryRequirements.memoryTypeBits, location));
+				.setMemoryTypeIndex(GetMemoryType(fullsizeMemoryRequirements.memoryTypeBits, this->location));
 
 			this->memory = RendererState::Device().allocateMemory(fullsizeMemoryAllocateInfo);
 			RendererState::Device().bindBufferMemory(this->buffer, this->memory, 0);
@@ -2212,10 +2223,6 @@ namespace VK
 		}
 		void SetData(int offset, void* data, int psize)
 		{
-			// If we can't map the buffer, we need to specify it will be a transfer dest
-			if (!(location & vk::MemoryPropertyFlagBits::eHostVisible))
-				this->usage |= vk::BufferUsageFlagBits::eTransferDst;
-
 			if (data == nullptr)
 				throw HardwareRendererException("Initialize buffer with size preferred.");
 
@@ -2307,6 +2314,7 @@ namespace VK
 						.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit)
 						.setPInheritanceInfo(nullptr);
 
+					// Transfer the data in chunks of <= 65536 bytes
 					transferCommandBuffer.begin(transferBeginInfo);
 					int remainingSize = psize;
 					int dataOffset = 0;
