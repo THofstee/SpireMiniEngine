@@ -585,21 +585,41 @@ namespace VK
 
 		static std::pair<vk::DescriptorPool, vk::DescriptorSet> AllocateDescriptorSet(vk::DescriptorSetLayout layout)
 		{
-			std::pair<vk::DescriptorPool, vk::DescriptorSet> res;
-			res.first = State().DescriptorPool();
-
-			// Create Descriptor Set
-			vk::DescriptorSetAllocateInfo descriptorSetAllocateInfo = vk::DescriptorSetAllocateInfo()
-				.setDescriptorPool(res.first)
-				.setDescriptorSetCount(1)
-				.setPSetLayouts(&layout);
-
-			std::vector<vk::DescriptorSet> descriptorSets = RendererState::Device().allocateDescriptorSets(descriptorSetAllocateInfo);
-			res.second = descriptorSets[0];
-
 			//TODO: add counter mechanism to DescriptorPoolObject so we know when to destruct
+			int numTries = 2;
+			while (true)
+			{
+				try
+				{
+					std::pair<vk::DescriptorPool, vk::DescriptorSet> res;
+					res.first = State().DescriptorPool();
 
-			return res;
+					// Create Descriptor Set
+					vk::DescriptorSetAllocateInfo descriptorSetAllocateInfo = vk::DescriptorSetAllocateInfo()
+						.setDescriptorPool(res.first)
+						.setDescriptorSetCount(1)
+						.setPSetLayouts(&layout);
+
+					std::vector<vk::DescriptorSet> descriptorSets = RendererState::Device().allocateDescriptorSets(descriptorSetAllocateInfo);
+					res.second = descriptorSets[0];
+
+					return res;
+				}
+				catch (std::system_error& e)
+				{
+					vk::Result err = static_cast<vk::Result>(e.code().value());
+					if (err == vk::Result::eErrorOutOfDeviceMemory)
+					{
+						RendererState::
+						State().descriptorPoolChain->Add(new DescriptorPoolObject());
+						return AllocateDescriptorSet(layout);
+					}
+					else
+						throw e;
+
+					if (--numTries <= 0) throw e;
+				}
+			}
 		}
 
 		// Bookkeeping for multiple instances of HardwareRenderer
@@ -1892,7 +1912,7 @@ namespace VK
 
 	class Texture2DArray : public VK::Texture, public GameEngine::Texture2DArray
 	{
-	private:
+	public:
 		int width;
 		int height;
 		int arrayLayers;
