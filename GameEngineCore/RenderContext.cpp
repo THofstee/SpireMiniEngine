@@ -2,6 +2,7 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "Engine.h"
+#include "EngineLimits.h"
 #include "TextureCompressor.h"
 #include "CoreLib/LibIO.h"
 #include "CoreLib/Graphics/TextureFile.h"
@@ -559,7 +560,7 @@ namespace GameEngine
 
 	ModuleInstance * RendererSharedResource::CreateModuleInstance(SpireModule * shaderModule, DeviceMemory * uniformMemory, int uniformBufferSize)
 	{
-		ModuleInstance * rs = new ModuleInstance(shaderModule);
+		ModuleInstance * rs = new ModuleInstance(spireContext, shaderModule);
 		rs->BindingName = spGetModuleName(shaderModule);
 		rs->BufferLength = Math::Max(spModuleGetParameterBufferSize(shaderModule), uniformBufferSize);
 		if (rs->BufferLength > 0)
@@ -598,6 +599,10 @@ namespace GameEngine
 					break;
 				}
 				descs.Add(layout);
+			}
+			if (info.Specialize)
+			{
+				rs->SpecializeParamOffsets.Add(info.Offset);
 			}
 		}
 		rs->DescriptorLayout = hardwareRenderer->CreateDescriptorSetLayout(descs.GetArrayView());

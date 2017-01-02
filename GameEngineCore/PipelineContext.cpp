@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "CoreLib/LibIO.h"
 #include "ShaderCompiler.h"
+#include "EngineLimits.h"
 
 using namespace CoreLib;
 using namespace CoreLib::IO;
@@ -155,7 +156,35 @@ namespace GameEngine
 			Engine::Instance()->GetRenderer()->QueueDescriptorSetUpdate(Descriptors.Ptr(), 0, UniformMemory->GetBuffer(), BufferOffset + alternateBufferOffset, BufferLength);
 			frameId++;
 		}
+		bool keyChanged = false;
+		if (SpecializeParamOffsets.Count())
+		{
+			if (currentSpecializationKey.Count() != SpecializeParamOffsets.Count())
+			{
+				currentSpecializationKey.SetSize(SpecializeParamOffsets.Count());
+				keyChanged = true;
+			}
+			for (int i = 0; i < SpecializeParamOffsets.Count(); i++)
+			{
+				int param = *(int*)((char*)data + SpecializeParamOffsets[i]);
+				if (currentSpecializationKey[i] != param)
+				{
+					keyChanged = true;
+					currentSpecializationKey[i] = param;
+				}
+			}
+		}
+		if (keyChanged)
+		{
+			specializedModule = spSpecializeModule(spireContext, module, currentSpecializationKey.Buffer(), currentSpecializationKey.Count(), nullptr);
+		}
 		//UniformMemory->GetBuffer()->SetData(BufferOffset, data, CoreLib::Math::Min(length, BufferLength));
+	}
+
+	ModuleInstance::~ModuleInstance()
+	{
+		if (UniformMemory)
+			UniformMemory->Free(UniformPtr, BufferLength * DynamicBufferLengthMultiplier);
 	}
 
 }

@@ -9,7 +9,7 @@
 #include "../Spire/Spire.h"
 #include "../WinForm/Debug.h"
 #include "../GameEngineCore/HardwareRenderer.h"
-
+#include "../Common.h"
 #include <assert.h>
 #pragma comment(lib, "opengl32.lib")
 
@@ -285,6 +285,43 @@ namespace GLL
 		{
 			Handle = 0;
 		}
+	};
+
+	class Fence : public GameEngine::Fence 
+	{
+	public:
+		int waitCounter = 0;
+		GLsync handle = nullptr;
+		Fence()
+		{}
+		~Fence()
+		{
+			if (handle)
+				glDeleteSync(handle);
+		}
+		virtual void Reset() override
+		{
+			if (handle)
+			{
+				glDeleteSync(handle);
+				handle = nullptr;
+			}
+		}
+		virtual void Wait() override
+		{
+			if (handle)
+			{
+				while (1)
+				{
+					GLenum waitReturn = glClientWaitSync(handle, GL_SYNC_FLUSH_COMMANDS_BIT, 1);
+					if (waitReturn == GL_ALREADY_SIGNALED || waitReturn == GL_CONDITION_SATISFIED)
+						return;
+
+					waitCounter++;
+				}
+			}
+		}
+
 	};
 
 	class RenderBuffer : public GL_Object
@@ -615,7 +652,6 @@ namespace GLL
 				glGetTexImage(GL_TEXTURE_2D, level, format, TranslateDataTypeToInputType(outputType), data);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
-		void DebugDump(String fileName);
 		void BuildMipmaps()
 		{
 			glBindTexture(GL_TEXTURE_2D, Handle);
@@ -2093,7 +2129,12 @@ namespace GLL
 			}
 		}
 
-		virtual void ExecuteCommandBuffers(GameEngine::FrameBuffer* frameBuffer, CoreLib::ArrayView<GameEngine::CommandBuffer*> commands) override
+		virtual GameEngine::Fence* CreateFence() override
+		{
+			return new GLL::Fence();
+		}
+
+		virtual void ExecuteCommandBuffers(GameEngine::FrameBuffer* frameBuffer, CoreLib::ArrayView<GameEngine::CommandBuffer*> commands, GameEngine::Fence * fence) override
 		{
 			glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
 			auto fb = (GLL::FrameBufferDescriptor*)(frameBuffer);
@@ -2296,13 +2337,18 @@ namespace GLL
 					}
 				}
 			}
-
+			if (fence)
+			{
+				auto pfence = (GLL::Fence*)fence;
+				if (pfence->handle)
+					glDeleteSync(pfence->handle);
+				pfence->handle = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+			}
 			int location = 0;
 			for (location = 0; location < fb->attachments.Count(); location++)
 			{
 				srcFrameBuffer.SetColorRenderTarget(location, Texture2D());
 			}
-			srcFrameBuffer.SetDepthStencilRenderTarget(Texture2D());
 			srcFrameBuffer.SetDepthStencilRenderTarget(Texture2D());
 		}
 
@@ -2370,6 +2416,7 @@ namespace GLL
 			SetReadFrameBuffer(srcFrameBuffer);
 			SetWriteFrameBuffer(GLL::FrameBuffer());
 			CopyFrameBuffer(0, 0, width, height, 0, 0, width, height, true, false, false);
+
 			SwapBuffers();
 
 			switch (reinterpret_cast<GLL::Texture2D*>(srcImage)->format)
@@ -2729,12 +2776,12 @@ namespace GLL
 				throw HardwareRendererException("Renderer is already in data transfer mode.");
 #endif
 			isInDataTransfer = true;
-			//glFinish();
 		}
 
 		virtual void EndDataTransfer() override
 		{
 			isInDataTransfer = false;
+			//glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
 		}
 
 		Program CreateTransformFeedbackProgram(const Shader &vertexShader, const List<String> & varyings, FeedbackStorageMode format)
@@ -3221,7 +3268,7 @@ namespace GLL
 			}
 			return result;
 		}
-
+		
 		virtual int GetDescriptorPoolCount() override
 		{
 			return 0;
