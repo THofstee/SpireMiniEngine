@@ -1894,10 +1894,6 @@ namespace GLL
 			}
 			buffer.Add(data);
 		}
-		virtual void ClearAttachments(ArrayView<TextureUsage> renderAttachments, int /*w*/, int /*h*/) override
-		{
-			ClearAttachmentsImpl(renderAttachments);
-		}
 		virtual void ClearAttachments(GameEngine::FrameBuffer * frameBuffer) override
 		{
 			auto & attachments = ((GLL::FrameBufferDescriptor*)frameBuffer)->attachments;

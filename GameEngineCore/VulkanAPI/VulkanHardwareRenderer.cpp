@@ -3405,26 +3405,38 @@ namespace VK
 		}
 		virtual void ClearAttachments(GameEngine::FrameBuffer * frameBuffer) override
 		{
-			CoreLib::Array<TextureUsage, 16> usages;
 			auto & renderAttachments = ((VK::FrameBuffer*)frameBuffer)->renderAttachments;
-			for (auto & attach : renderAttachments.attachments)
-				if (attach.handle.tex2D)
-					usages.Add(dynamic_cast<VK::Texture2D*>(attach.handle.tex2D)->usage);
-				else if (attach.handle.tex2DArray)
-					throw CoreLib::NotImplementedException();
 
-			ClearAttachments(usages.GetArrayView(), renderAttachments.width, renderAttachments.height);
-		}
-		virtual void ClearAttachments(CoreLib::ArrayView<TextureUsage> renderAttachments, int w, int h) override
-		{
 			CoreLib::List<vk::ClearAttachment> attachments;
 			CoreLib::List<vk::ClearRect> rects;
 
-			for (int k = 0; k < renderAttachments.Count(); k++)
+			for (int k = 0; k < renderAttachments.attachments.Count(); k++)
 			{
 				vk::ImageAspectFlags aspectMask;
 				bool isDepth = false;
-				switch (renderAttachments[k])
+
+				auto& attach = renderAttachments.attachments[k];
+
+				int w, h;
+				int layers = 1;
+				TextureUsage usage;
+				if (attach.handle.tex2D)
+				{
+					auto internalHandle = dynamic_cast<VK::Texture2D*>(attach.handle.tex2D);
+					usage = internalHandle->usage;
+					w = internalHandle->width;
+					h = internalHandle->height;
+				}
+				else if (attach.handle.tex2DArray)
+				{
+					auto internalHandle = dynamic_cast<VK::Texture2DArray*>(attach.handle.tex2DArray);
+					usage = internalHandle->usage;
+					w = internalHandle->width;
+					h = internalHandle->height;
+					layers = internalHandle->arrayLayers;
+				}
+
+				switch (usage)
 				{
 				case GameEngine::TextureUsage::ColorAttachment:
 				case GameEngine::TextureUsage::SampledColorAttachment:
@@ -3454,7 +3466,7 @@ namespace VK
 				rects.Add(
 					vk::ClearRect()
 					.setBaseArrayLayer(0)
-					.setLayerCount(1)
+					.setLayerCount(layers)
 					.setRect(vk::Rect2D(vk::Offset2D(0, 0), vk::Extent2D(w, h)))
 				);
 			}
@@ -3462,7 +3474,6 @@ namespace VK
 				vk::ArrayProxy<const vk::ClearAttachment>(attachments.Count(), attachments.Buffer()),
 				vk::ArrayProxy<const vk::ClearRect>(rects.Count(), rects.Buffer())
 			);
-
 		}
 	};
 

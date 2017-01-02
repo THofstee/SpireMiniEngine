@@ -636,7 +636,6 @@ namespace GameEngine
 		virtual void DrawIndexed(int firstIndex, int indexCount) = 0;
 		virtual void DrawIndexedInstanced(int numInstances, int firstIndex, int indexCount) = 0;
 		virtual void Blit(Texture2D* dstImage, Texture2D* srcImage) = 0;
-		virtual void ClearAttachments(CoreLib::ArrayView<TextureUsage> renderAttachments, int w, int h) = 0;
 		virtual void ClearAttachments(FrameBuffer * frameBuffer) = 0;
 	};
 
