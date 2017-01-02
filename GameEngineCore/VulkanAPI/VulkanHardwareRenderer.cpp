@@ -2794,7 +2794,7 @@ namespace VK
 			else
 				descriptorType = vk::DescriptorType::eStorageBuffer;
 
-			int range = (length == -1) ? internalBuffer->backingSize : length;
+			int range = (length == -1) ? internalBuffer->size : length;
 			bufferInfo.Add(
 				vk::DescriptorBufferInfo()
 				.setBuffer(internalBuffer->buffer)
@@ -3012,7 +3012,7 @@ namespace VK
 			.setDepthClampEnable(VK_FALSE)
 			.setRasterizerDiscardEnable(VK_FALSE)
 			.setPolygonMode(vk::PolygonMode::eFill)
-			.setCullMode(vk::CullModeFlagBits::eNone)
+			.setCullMode(vk::CullModeFlagBits::eBack)
 			.setFrontFace(vk::FrontFace::eClockwise)
 			.setDepthBiasEnable(VK_FALSE)
 			.setDepthBiasConstantFactor(0.0f)
@@ -3422,7 +3422,7 @@ namespace VK
 				auto& attach = renderAttachments.attachments[k];
 
 				int w, h;
-				int layers = 1;
+				int layers;
 				TextureUsage usage;
 				if (attach.handle.tex2D)
 				{
@@ -3430,6 +3430,7 @@ namespace VK
 					usage = internalHandle->usage;
 					w = internalHandle->width;
 					h = internalHandle->height;
+					layers = 1;
 				}
 				else if (attach.handle.tex2DArray)
 				{
@@ -3457,7 +3458,7 @@ namespace VK
 					attachments.Add(
 						vk::ClearAttachment()
 						.setAspectMask(aspectMask)
-						.setColorAttachment(k)
+						.setColorAttachment(VK_ATTACHMENT_UNUSED)
 						.setClearValue(vk::ClearDepthStencilValue(1.0f, 0)));
 				else
 					attachments.Add(
