@@ -2306,13 +2306,14 @@ namespace VK
 
 					transferCommandBuffer.begin(transferBeginInfo);
 					int remainingSize = psize;
+					int dataOffset = 0;
 					while (remainingSize > 65536)
 					{
-						transferCommandBuffer.updateBuffer(this->buffer, offset, 65536, (uint32_t*)((char*)data + offset));
+						transferCommandBuffer.updateBuffer(this->buffer, offset, 65536, (uint32_t*)((char*)data + dataOffset));
 						remainingSize -= 65536;
-						offset += 65536;
+						dataOffset += 65536;
 					}
-					transferCommandBuffer.updateBuffer(this->buffer, offset, remainingSize, (uint32_t*)((char*)data + offset));
+					transferCommandBuffer.updateBuffer(this->buffer, offset, remainingSize, (uint32_t*)((char*)data + dataOffset));
 					transferCommandBuffer.end();
 
 					// Submit to queue
@@ -2646,7 +2647,6 @@ namespace VK
 	class DescriptorSetLayout : public GameEngine::DescriptorSetLayout
 	{
 	public:
-		CoreLib::List<vk::DescriptorSetLayoutBinding> layoutBindings;
 		vk::DescriptorSetLayout layout;
 
 		DescriptorSetLayout(CoreLib::ArrayView<GameEngine::DescriptorLayout> descriptors)
@@ -2657,6 +2657,7 @@ namespace VK
 			for (auto& desc : usedDescriptors)
 				desc = false;
 #endif
+			CoreLib::List<vk::DescriptorSetLayoutBinding> layoutBindings;
 
 			for (auto& desc : descriptors)
 			{
