@@ -2299,10 +2299,8 @@ namespace VK
 				}
 				else
 				{
-					//TEMP
 					assert(psize % 4 == 0);
 					assert(offset % 4 == 0);
-					//ENDTEMP
 
 					// Record command buffer
 					vk::CommandBufferBeginInfo transferBeginInfo = vk::CommandBufferBeginInfo()
@@ -2688,7 +2686,10 @@ namespace VK
 
 			layout = RendererState::Device().createDescriptorSetLayout(createInfo);
 		}
-		~DescriptorSetLayout() {}
+		~DescriptorSetLayout()
+		{
+			RendererState::Device().destroyDescriptorSetLayout(layout);
+		}
 	};
 
 	class DescriptorSet : public GameEngine::DescriptorSet
@@ -2698,6 +2699,7 @@ namespace VK
 		// previously bound descriptors and then create new imageInfo/bufferInfo
 		// and swap them with the old one, as well as only updating the descriptors
 		// that had changed. Should this do that too?
+		CoreLib::RefPtr<DescriptorSetLayout> descriptorSetLayout;
 		CoreLib::List<vk::DescriptorImageInfo> imageInfo;
 		CoreLib::List<vk::DescriptorBufferInfo> bufferInfo;
 		CoreLib::List<vk::WriteDescriptorSet> writeDescriptorSets;
@@ -2707,6 +2709,10 @@ namespace VK
 		DescriptorSet() {}
 		DescriptorSet(DescriptorSetLayout* layout)
 		{
+			// We need to keep a ref pointer to the layout because we need to have
+			// the layout available when we call vkUpdateDescriptorSets (2.3.1)
+			descriptorSetLayout = layout;
+
 			std::pair<vk::DescriptorPool, vk::DescriptorSet> res = RendererState::AllocateDescriptorSet(layout->layout);
 			descriptorPool = res.first;
 			descriptorSet = res.second;
@@ -2816,7 +2822,6 @@ namespace VK
 	class Pipeline : public GameEngine::Pipeline
 	{
 	public:
-		CoreLib::List<vk::DescriptorSetLayout> descriptorSetLayouts;
 		vk::PipelineLayout pipelineLayout;
 		vk::Pipeline pipeline;
 	public:
@@ -2825,8 +2830,6 @@ namespace VK
 		{
 			if (pipeline) RendererState::Device().destroyPipeline(pipeline);
 			if (pipelineLayout) RendererState::Device().destroyPipelineLayout(pipelineLayout);
-			for (auto descriptorSetLayout : descriptorSetLayouts)
-				RendererState::Device().destroyDescriptorSetLayout(descriptorSetLayout);
 		}
 	};
 
